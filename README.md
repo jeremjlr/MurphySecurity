@@ -69,7 +69,7 @@ Do not forget to also forward ports 80 and 443 to the core raspberry pi which sh
 sudo raspi-config
 ```
 
-<p>Go to "System Options > Hostname" and change "raspberrypi" to "securitycore".</p>
+<p>Go to "System Options > Hostname" and change "raspberrypi" to "securitycore" or whatever name you want.</p>
 <p>Quit and reboot.</p>
 
 #### .NET
