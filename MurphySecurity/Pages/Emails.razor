@@ -1,0 +1,89 @@
+﻿@page "/emails"
+@{
+    // MurphySecurity is a simple home security system designed to be used with Raspberry pi
+    // Copyright (C) 2021 Jérémy LEPROU jerem.jlr@gmail.com
+    //
+    // This program is free software: you can redistribute it and/or modify
+    // it under the terms of the GNU Affero General Public License as published
+    // by the Free Software Foundation, either version 3 of the License, or
+    // (at your option) any later version.
+    //
+    // This program is distributed in the hope that it will be useful,
+    // but WITHOUT ANY WARRANTY, without even the implied warranty of
+    // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    // GNU Affero General Public License for more details.
+    //
+    // You should have received a copy of the GNU Affero General Public License
+    // along with this program.  If not, see <https://www.gnu.org/licenses/>.
+}
+@using MurphySecurity.Emails;
+
+<h1>Emails</h1>
+<div>
+    <p><b>All alerts will be sent to the following emails :</b></p>
+    @{IEnumerator<string> enumerator = EmailsSender.EmailsBag.GetEnumerator();}
+    @while (enumerator.MoveNext())
+    {
+        <p>@enumerator.Current</p>
+    }
+</div>
+<div>
+    <p><b>Add an email</b></p>
+    <p>
+        Email : <input @bind="_email" />
+    </p>
+    <p>
+        <button class="btn btn-primary" @onclick="AddEmail">Add</button>
+        <button class="btn btn-primary" @onclick="ClearEmails">Clear all emails</button>
+    </p>
+</div>
+<div>
+    <p><b>Email send method :</b></p>
+    <p>
+        <select @bind="EmailsSender.SelectedMethod" name="emailmethod" id="emailmethod">
+            <option value="@EmailsSender.SendMethod.Gmail">Gmail</option>
+            <option value="@EmailsSender.SendMethod.SendGrid">SendGrid</option>
+        </select>
+        @{string toSendMessage = "THIS IS A TEST"; string toSendSubject = "THIS IS A TEST";}
+        <button class="btn btn-primary" @onclick="() => { EmailsSender.SendEmailAlert(toSendSubject,toSendMessage); }">Send test email alert</button>
+    </p>
+</div>
+<div>
+    <p><b>Gmail email sender :</b></p>
+    <ul>
+        <li>Email : @EmailsSender.EmailSender</li>
+        <li>Password : @EmailsSender.PasswordSender</li>
+    </ul>
+    <ul>
+        <li>New Email : <input @bind="_emailSender" /></li>
+        <li>New Password : <input @bind="_emailPassword" /></li>
+    </ul>
+    <p>
+        <button class="btn btn-primary" @onclick="() => { EmailsSender.ChangeSender(_emailSender, _emailPassword); _emailSender = _emailPassword = string.Empty; }">Change email sender</button>
+        <button class="btn btn-primary" @onclick="()=> { EmailsSender.SetSenderToDefault(); _emailSender = _emailPassword = string.Empty; }">Default email sender</button>
+    </p>
+</div>
+<div>
+    <p><b>SendGrid email sender :</b></p>
+    <p>API KEY : <input @bind="_APIKey" /></p>
+</div>
+
+@code {
+    private string _email;
+    private string _emailSender = "";
+    private string _emailPassword = "";
+    private string _APIKey = "";
+
+    private void AddEmail()
+    {
+        EmailsSender.EmailsBag.Add(_email);
+        _email = "";
+        EmailsSender.SaveEmails();
+    }
+    private void ClearEmails()
+    {
+        EmailsSender.EmailsBag.Clear();
+        //Should save an empty file
+        EmailsSender.SaveEmails();
+    }
+}

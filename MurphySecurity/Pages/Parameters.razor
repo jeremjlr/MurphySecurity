@@ -1,0 +1,72 @@
+﻿@page "/parameters"
+@{
+    // MurphySecurity is a simple home security system designed to be used with Raspberry pi
+    // Copyright (C) 2021 Jérémy LEPROU jerem.jlr@gmail.com
+    //
+    // This program is free software: you can redistribute it and/or modify
+    // it under the terms of the GNU Affero General Public License as published
+    // by the Free Software Foundation, either version 3 of the License, or
+    // (at your option) any later version.
+    //
+    // This program is distributed in the hope that it will be useful,
+    // but WITHOUT ANY WARRANTY, without even the implied warranty of
+    // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    // GNU Affero General Public License for more details.
+    //
+    // You should have received a copy of the GNU Affero General Public License
+    // along with this program.  If not, see <https://www.gnu.org/licenses/>.
+}
+@using MurphySecurity.Alerts;
+
+<h1>Configuration</h1>
+
+<div>
+    <h3>Current core 433Mhz codes</h3>
+    <p>
+        <ul>
+            <li>Close code : @AlertManager.CloseCode</li>
+            <li>Open code : @AlertManager.OpenCode</li>
+            <li>Alarm code : @AlertManager.AlarmCode</li>
+        </ul>
+    </p>
+    <p>
+        <button class="btn btn-primary" @onclick="()=> { AlertManager.GenerateNewCodes(); }">Generate new codes</button>
+        <button class="btn btn-primary" @onclick="()=> { AlertManager.EmitCode(); }">Emit code</button>
+        <button class="btn btn-primary" @onclick="AlertManager.EnableSecurity">Enable Security</button>
+        <button class="btn btn-primary" @onclick="AlertManager.DisableSecurity">Disable Security</button>
+    </p>
+</div>
+
+<div>
+    <h3>Password</h3>
+    <p>Old password : <input type="password" @bind="_password" /></p>
+    <p>New password : <input type="password" @bind="_newPassword1" /></p>
+    <p>New password : <input type="password" @bind="_newPassword2" /></p>
+
+    @if (_passwordError)
+    {
+        <p><font color="red">Error, make sure the old password is correct and both new passwords match.</font></p>
+    }
+
+    <button class="btn btn-primary" @onclick="ChangePassword">Change password</button>
+</div>
+
+@code {
+    private string _password = "";
+    private string _newPassword1 = "";
+    private string _newPassword2 = "";
+    private bool _passwordError;
+
+    private void ChangePassword()
+    {
+        if (_password.Equals(AlertManager.Password)
+            && _newPassword1.Equals(_newPassword2))
+        {
+            AlertManager.ChangePassword(_newPassword1);
+            _password = _newPassword1 = _newPassword2 = "";
+            _passwordError = false;
+        }
+        else
+            _passwordError = true;
+    }
+}

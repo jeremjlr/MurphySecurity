@@ -1,0 +1,77 @@
+﻿@{
+    // MurphySecurity is a simple home security system designed to be used with Raspberry pi
+    // Copyright (C) 2021 Jérémy LEPROU jerem.jlr@gmail.com
+    //
+    // This program is free software: you can redistribute it and/or modify
+    // it under the terms of the GNU Affero General Public License as published
+    // by the Free Software Foundation, either version 3 of the License, or
+    // (at your option) any later version.
+    //
+    // This program is distributed in the hope that it will be useful,
+    // but WITHOUT ANY WARRANTY, without even the implied warranty of
+    // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    // GNU Affero General Public License for more details.
+    //
+    // You should have received a copy of the GNU Affero General Public License
+    // along with this program.  If not, see <https://www.gnu.org/licenses/>.
+}
+@inherits LayoutComponentBase
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+@using MurphySecurity.Alerts;
+
+@if (_connected)
+{
+    <div class="sidebar">
+        <NavMenu />
+    </div>
+
+    <div class="main">
+        <div class="top-row px-4">
+            <a href="https://github.com/Lumllum/MurphySecurity" target="_blank">GitHub</a>
+        </div>
+
+        <div class="content px-4">
+            @Body
+        </div>
+    </div>
+}
+else
+{
+    <div>
+        <input type="password" @bind="_inputPassword" />
+        <button class="btn btn-primary">Connexion</button>
+    </div>
+}
+
+@code{
+    private bool _connected;
+    private string _inputPassword;
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        DateTime _connectionTime = await localStorage.GetItemAsync<DateTime>("connectionTime");
+        //Auto disconnect after 6 hours / 21600 seconds
+        if ((DateTime.Now - _connectionTime).TotalSeconds > 21600)
+            await localStorage.SetItemAsync<string>("password", "kek");
+        //if input is not null then we save it as a cookie and compare it to the password
+        if (_inputPassword != null)
+        {
+            await localStorage.SetItemAsync<string>("password", _inputPassword);
+            await localStorage.SetItemAsync<DateTime>("connectionTime", DateTime.Now);
+            _inputPassword = null;
+            //Needed to then rerender the connected page because cookies can only be read in after render when using blazor serverside
+            await this.InvokeAsync(StateHasChanged);
+        }
+
+        bool previous_connected = _connected;
+        string savedPassword = await localStorage.GetItemAsync<string>("password");
+        if (savedPassword != null)
+        {
+            _connected = savedPassword.Equals(AlertManager.Password);
+        }
+        if (previous_connected != _connected)
+        {
+            await this.InvokeAsync(StateHasChanged);
+        }
+    }
+}

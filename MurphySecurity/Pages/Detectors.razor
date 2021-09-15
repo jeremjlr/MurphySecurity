@@ -1,0 +1,244 @@
+﻿@page "/detectors"
+@{
+    // MurphySecurity is a simple home security system designed to be used with Raspberry pi
+    // Copyright (C) 2021 Jérémy LEPROU jerem.jlr@gmail.com
+    //
+    // This program is free software: you can redistribute it and/or modify
+    // it under the terms of the GNU Affero General Public License as published
+    // by the Free Software Foundation, either version 3 of the License, or
+    // (at your option) any later version.
+    //
+    // This program is distributed in the hope that it will be useful,
+    // but WITHOUT ANY WARRANTY, without even the implied warranty of
+    // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    // GNU Affero General Public License for more details.
+    //
+    // You should have received a copy of the GNU Affero General Public License
+    // along with this program.  If not, see <https://www.gnu.org/licenses/>.
+}
+@implements IDisposable
+@using System.Threading;
+@using MurphySecurity.Detectors;
+
+@if (_editing)
+{
+    <h1>Edit</h1>
+    <div>
+        <p>
+            Name : <input @bind="_nameToEdit" />
+        </p>
+        <p><button class="btn btn-primary" aria-hidden="true" @onclick="DeleteDetector">Delete this detector</button></p>
+        <p>433 Mhz codes of this detector : </p>
+        <ul>
+            @foreach (long rfcode in _detectorToEdit.GetCodes())
+            {
+                <li>
+                    @rfcode
+                </li>
+            }
+        </ul>
+    </div>
+    <div>
+        <button class="btn btn-primary" aria-hidden="true" @onclick="() => { _editing = false; }">Back</button>
+        <button class="btn btn-primary" aria-hidden="true" @onclick="() => { EditDetector(); _editing = false; }">Confirm</button>
+    </div>
+}
+else if (_validating)
+{
+    <div>
+        <p>Make sure dectectors emit every signal at least once in order to be correctly detected.</p>
+        <p>If no detector type is available, delete it and try again.</p>
+
+        <p>433 Mhz codes of this detector : </p>
+        <ul>
+            @foreach (long rfcode in _detectorToValidate)
+            {
+                <li>
+                    @rfcode
+                </li>
+            }
+        </ul>
+
+        <label for="detectors">Detector types :</label>
+
+        <select @bind="_selectedType" name="detectors" id="detectors">
+            @if (_detectorToValidate.Length == 1)
+            {
+                <option value="0">Door/Window Detector</option>
+                <option value="1">Movement Detector</option>
+            }
+            else if (_detectorToValidate.Length == 2)
+            {
+                <option value="0">Door/Window Detector</option>
+            }
+            else if (_detectorToValidate.Length == 4)
+            {
+                <option value="2">Key</option>
+            }
+        </select>
+    </div>
+    <div>
+        <button class="btn btn-primary" aria-hidden="true" @onclick="() => { _validating = false; }">Back</button>
+        <button class="btn btn-primary" aria-hidden="true" @onclick="() => { ValidateDetector(_selectedType); _validating = false; }">Confirm</button>
+    </div>
+}
+else
+{
+    <h1>Detectors</h1>
+    <div>
+        <p><b>Detectors status :</b></p>
+        <ul>
+            @foreach (Detector detector in DetectorManager.GetDetectors())
+            {
+                @if (detector.HasInformation)
+                {
+                    double minutes = detector.MinutesSinceLastInformation;
+                    if (detector is DoorWindowDetector)
+                    {
+                        DoorWindowDetector door_window_detector = (DoorWindowDetector)detector;
+                        if (door_window_detector.IsOpen)
+                        {
+                            <li>
+                                @door_window_detector.Name : <font color="red">Opened</font> @minutes minutes ago.<button class="oi oi-list-rich" aria-hidden="true" @onclick="() => { StartEditing(detector); }"></button>
+                            </li>
+                        }
+                        else
+                        {
+                            <li>
+                                @door_window_detector.Name : <font color="green">Closed</font> @minutes minutes ago.<button class="oi oi-list-rich" aria-hidden="true" @onclick="() => { StartEditing(detector); }"></button>
+                            </li>
+                        }
+                    }
+                    else if (detector is MovementDetector)
+                    {
+                        MovementDetector movement_detector = (MovementDetector)detector;
+                        <li>
+                            @movement_detector.Name : <font color="red">Movement detected</font> @minutes minutes ago.<button class="oi oi-list-rich" aria-hidden="true" @onclick="() => { StartEditing(detector); }"></button>
+                        </li>
+                    }
+                    else if (detector is KeyDetector)
+                    {
+                        KeyDetector key_detector = (KeyDetector)detector;
+                        <li>
+                            @key_detector.Name : Last command received @minutes minutes ago.<button class="oi oi-list-rich" aria-hidden="true" @onclick="() => { StartEditing(detector); }"></button>
+                        </li>
+                    }
+                }
+                else
+                {
+                    <li>
+                        @detector.Name : <font color="grey">Awaiting a signal.</font><button class="oi oi-list-rich" aria-hidden="true" @onclick="() => { StartEditing(detector); }"></button>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+
+    <div>
+        <p><b>Detectors awaiting for validation :</b> <button class="btn btn-primary" aria-hidden="true" @onclick="() => { DetectorManager.RemoveAllWaitingDetectors(); }">Delete All</button></p>
+        <p>Make sure dectectors emit every signal at least once in order to be correctly detected.</p>
+        <ul>
+            @foreach (long[] waitingDetector in DetectorManager.GetWaitingDetectors())
+            {
+                if (waitingDetector.Length <= 1)
+                {
+                    <li>
+                        @waitingDetector.Length signal detector.<button class="oi oi-check" aria-hidden="true" @onclick="() => { StartValidating(waitingDetector); }"></button><button class="oi oi-delete" aria-hidden="true" @onclick="() => { DetectorManager.RemoveWaitingDetector(waitingDetector); }"></button>
+                    </li>
+                }
+                else
+                {
+                    <li>
+                        @waitingDetector.Length signals detector.<button class="oi oi-check" aria-hidden="true" @onclick="() => { StartValidating(waitingDetector); }"></button><button class="oi oi-delete" aria-hidden="true" @onclick="() => { DetectorManager.RemoveWaitingDetector(waitingDetector); }"></button>
+                    </li>
+                }
+            }
+        </ul>
+    </div>
+}
+
+@code {
+    private int _selectedType = 0;
+    private bool _disposed = false;
+    private bool _editing = false;
+    private bool _validating = false;
+    private Detector _detectorToEdit;
+    private long[] _detectorToValidate;
+    private string _nameToEdit;
+
+    protected override void OnInitialized()
+    {
+        Task.Factory.StartNew(() => { UpdateDetectors(); });
+    }
+
+    private void StartEditing(Detector detector)
+    {
+        _detectorToEdit = detector;
+        _nameToEdit = _detectorToEdit.Name;
+        _editing = true;
+    }
+
+    private void EditDetector()
+    {
+        _detectorToEdit.Name = _nameToEdit;
+        DetectorManager.SaveDetectors();
+    }
+
+    private void DeleteDetector()
+    {
+        DetectorManager.TryRemoveDetector(_detectorToEdit);
+        DetectorManager.SaveDetectors();
+        _editing = false;
+    }
+
+    private void StartValidating(long[] waitingDetector)
+    {
+        if (waitingDetector.Length == 1)
+            _selectedType = 0;
+        else if (waitingDetector.Length == 2)
+            _selectedType = 0;
+        else if (waitingDetector.Length == 4)
+            _selectedType = 2;
+        _detectorToValidate = waitingDetector;
+        _validating = true;
+    }
+
+    private void ValidateDetector(int detectorType)
+    {
+        Array.Sort(_detectorToValidate);
+        if (detectorType == 0)
+        {
+            if (_detectorToValidate.Length == 1)
+                DetectorManager.TryAddDetector(new DoorWindowDetector(_detectorToValidate[0], -1, "DoorWindowDetector"));
+            else if (_detectorToValidate.Length == 2)
+                DetectorManager.TryAddDetector(new DoorWindowDetector(_detectorToValidate[0], _detectorToValidate[1], "DoorWindowDetector"));
+        }
+        else if (detectorType == 1)
+        {
+            if (_detectorToValidate.Length == 1)
+                DetectorManager.TryAddDetector(new MovementDetector(_detectorToValidate[0], "MovementDetector"));
+        }
+        else if (detectorType == 2)
+        {
+            if (_detectorToValidate.Length == 4)
+                //Close code is the smaller code for keys, instead of Open code like DoorWindowDetectors
+                DetectorManager.TryAddDetector(new KeyDetector(_detectorToValidate[1], _detectorToValidate[0], _detectorToValidate[2], _detectorToValidate[3], "KeyDetector"));
+        }
+        DetectorManager.SaveDetectors();
+    }
+
+    private void UpdateDetectors()
+    {
+        while (!_disposed)
+        {
+            this.InvokeAsync(StateHasChanged);
+            Thread.Sleep(500);
+        }
+    }
+
+    void IDisposable.Dispose()
+    {
+        //Not implementing the normal dispose pattern because we know from doc that blazor will always call dispose for pages that implement IDisposable
+        _disposed = true;
+    }
+}

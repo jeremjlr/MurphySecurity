@@ -1,0 +1,81 @@
+﻿@{
+    // MurphySecurity is a simple home security system designed to be used with Raspberry pi
+    // Copyright (C) 2021 Jérémy LEPROU jerem.jlr@gmail.com
+    //
+    // This program is free software: you can redistribute it and/or modify
+    // it under the terms of the GNU Affero General Public License as published
+    // by the Free Software Foundation, either version 3 of the License, or
+    // (at your option) any later version.
+    //
+    // This program is distributed in the hope that it will be useful,
+    // but WITHOUT ANY WARRANTY, without even the implied warranty of
+    // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    // GNU Affero General Public License for more details.
+    //
+    // You should have received a copy of the GNU Affero General Public License
+    // along with this program.  If not, see <https://www.gnu.org/licenses/>.
+}
+@inject Blazored.LocalStorage.ILocalStorageService localStorage
+
+<div class="top-row pl-4 navbar navbar-dark">
+    <a class="navbar-brand" href="">Murphy Security</a>
+    <button class="navbar-toggler" @onclick="ToggleNavMenu">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+</div>
+
+<div class="@NavMenuCssClass" @onclick="ToggleNavMenu">
+    <ul class="nav flex-column">
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="" Match="NavLinkMatch.All">
+                <span class="oi oi-home" aria-hidden="true"></span> Main page
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="cameras">
+                <span class="oi oi-camera-slr" aria-hidden="true"></span> Cameras
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="detectors">
+                <span class="oi oi-badge" aria-hidden="true"></span> Detectors
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="alerts">
+                <span class="oi oi-media-record" aria-hidden="true"></span> Alert recordings
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="emails">
+                <span class="oi oi-browser" aria-hidden="true"></span> E-mails
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="parameters">
+                <span class="oi oi-list-rich" aria-hidden="true"></span> Parameters
+            </NavLink>
+        </li>
+        <li class="nav-item px-3">
+            <NavLink class="nav-link" href="" @onclick="Disconnect">
+                <!--I don't like this solution i wanna find something better-->
+                <span class="oi oi-account-logout" aria-hidden="true"></span> Logout
+            </NavLink>
+        </li>
+    </ul>
+</div>
+
+@code {
+    private bool collapseNavMenu = true;
+
+    private string NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+
+    private void ToggleNavMenu()
+    {
+        collapseNavMenu = !collapseNavMenu;
+    }
+    private void Disconnect()
+    {
+        localStorage.SetItemAsync<string>("password", "kek");
+    }
+}

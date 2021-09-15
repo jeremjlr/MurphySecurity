@@ -1,0 +1,90 @@
+﻿@page "/videowatch/{alertname}/{recordingname}"
+@{
+    // MurphySecurity is a simple home security system designed to be used with Raspberry pi
+    // Copyright (C) 2021 Jérémy LEPROU jerem.jlr@gmail.com
+    //
+    // This program is free software: you can redistribute it and/or modify
+    // it under the terms of the GNU Affero General Public License as published
+    // by the Free Software Foundation, either version 3 of the License, or
+    // (at your option) any later version.
+    //
+    // This program is distributed in the hope that it will be useful,
+    // but WITHOUT ANY WARRANTY, without even the implied warranty of
+    // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    // GNU Affero General Public License for more details.
+    //
+    // You should have received a copy of the GNU Affero General Public License
+    // along with this program.  If not, see <https://www.gnu.org/licenses/>.
+}
+@using System.IO
+
+<h1>@AlertName</h1>
+@if (_deleting)
+{
+    <p>
+        <h3>Delete ?</h3>
+        <button class="btn btn-primary" aria-hidden="true" @onclick="() => { _deleting = false; }">Back</button>
+        <a href="/alerts/">
+            <button class="btn btn-primary" aria-hidden="true" @onclick="() => { DeleteFiles(); }">Confirm</button>
+        </a>
+    </p>
+}
+else
+{
+    <p>
+        <a href="/alerts/">
+            <button class="btn btn-primary" aria-hidden="true">Back</button>
+        </a>
+
+        <a href=@_recordingLink download target="_top">
+            <button class="btn btn-primary" aria-hidden="true">Download</button>
+        </a>
+    </p>
+
+    <div>
+        <video controls>
+            <source src=@_recordingLink type="video/mp4">
+            <source src=@_recordingLink type="video/x-ms-wmv">
+            <source src=@_recordingLink type="video/webm">
+            <source src=@_recordingLink type="video/ogg">
+            <source src=@_recordingLink type="video/m4v">
+            <source src=@_recordingLink type="video/mpeg">
+            <source src=@_recordingLink type="video/quicktime">
+            <source src=@_recordingLink type="video/3gpp">
+        </video>
+    </div>
+
+    <p>
+        <button class="btn btn-primary" aria-hidden="true" @onclick="() => { _deleting = true; }">Delete</button>
+    </p>
+}
+
+@code {
+    private string _recordingLink = "";
+    private bool _deleting = false;
+
+    [Parameter]
+    public string AlertName { get; set; }
+    [Parameter]
+    public string RecordingName { get; set; }
+
+    protected override void OnInitialized()
+    {
+        _recordingLink = "/Alerts/" + AlertName + "/" + RecordingName;
+    }
+
+    private void DeleteFiles()
+    {
+        try
+        {
+            File.Delete(Directory.GetCurrentDirectory() + "/wwwroot" + _recordingLink);
+            //Deletes alert directory if it's empty
+            if (Directory.GetFiles(Directory.GetCurrentDirectory() + "/wwwroot" + "/Alerts/" + AlertName).Length == 0)
+                Directory.Delete(Directory.GetCurrentDirectory() + "/wwwroot" + "/Alerts/" + AlertName);
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine("Error while trying to delete recording or alert directory : " + exception.Message);
+        }
+    }
+}

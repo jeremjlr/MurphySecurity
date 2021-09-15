@@ -1,0 +1,178 @@
+﻿@page "/cameras"
+@{
+    // MurphySecurity is a simple home security system designed to be used with Raspberry pi
+    // Copyright (C) 2021 Jérémy LEPROU jerem.jlr@gmail.com
+    //
+    // This program is free software: you can redistribute it and/or modify
+    // it under the terms of the GNU Affero General Public License as published
+    // by the Free Software Foundation, either version 3 of the License, or
+    // (at your option) any later version.
+    //
+    // This program is distributed in the hope that it will be useful,
+    // but WITHOUT ANY WARRANTY, without even the implied warranty of
+    // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    // GNU Affero General Public License for more details.
+    //
+    // You should have received a copy of the GNU Affero General Public License
+    // along with this program.  If not, see <https://www.gnu.org/licenses/>.
+}
+@implements IDisposable
+@using System.Threading;
+@using MurphySecurity.Cameras;
+
+<h1>Cameras</h1>
+<div>
+    <p>
+        <button class="btn btn-primary" @onclick="Previous">Previous</button>
+        <button class="btn btn-primary" @onclick="Next">Next</button>
+    </p>
+</div>
+<div>
+    @if (_currentCamera == null)
+    {
+        <p>This camera has been disconnected.</p>
+    }
+    else
+    {
+        <h2><b>ID : @_currentCamera.Settings.Id</b></h2>
+        <h3><b>IP : @_currentCamera.Ip</b></h3>
+        <div class="img-overlay-wrap" width="@CAM_WIDTH" height="@CAM_HEIGHT">
+            <img src=@_imgSrc width="@CAM_WIDTH" height="@CAM_HEIGHT" />
+            @if (_editing)
+            {
+                <svg width="@CAM_WIDTH" height="@CAM_HEIGHT">
+                    <line x1="0" y1="@_detectionArea_set3" x2="@CAM_WIDTH" y2="@_detectionArea_set3" style="stroke:rgb(0,255,0);stroke-width:2" />
+                    <line x1="@_detectionArea_set1" y1="0" x2="@_detectionArea_set1" y2="@CAM_HEIGHT" style="stroke:rgb(0,255,0);stroke-width:2" />
+                    <line x1="@_detectionArea_set2" y1="0" x2="@_detectionArea_set2" y2="@CAM_HEIGHT" style="stroke:rgb(255,0,0);stroke-width:2" />
+                    <line x1="0" y1="@_detectionArea_set4" x2="@CAM_WIDTH" y2="@_detectionArea_set4" style="stroke:rgb(255,0,0);stroke-width:2" />
+                </svg>
+            }
+        </div>
+        <h3>Last Detection : @_currentCamera.LastDetectionTime</h3>
+        if (_editing)
+        {
+            <div>
+                <p style="font-size:140%;">
+                    Name : <input @bind="_currentCamera.Settings.Id" />
+                    <input type="checkbox" @bind="_currentCamera.Settings.DetectionEnabled">
+                    <label for="scales">Enable camera detection</label>
+                </p>
+                @if (_currentCamera.Settings.DetectionEnabled)
+                {
+                    <h3>Parameters :</h3>
+                    <p>All these parameters only affect the detection process and are not visible on the image. Image compression requires a camera reboot to take effect.</p>
+                    <ul>
+                        <li>Image compression : <input type="range" min="10" max="100" step="5" @bind="CompressorSliderValue"><p>@_currentCamera.Settings.ImageCompressor</p></li>
+                        <li>Noise reducer : <input type="range" min="1" max="55" step="2" @bind="_currentCamera.Settings.NoiseReducer"><p>@_currentCamera.Settings.NoiseReducer</p></li>
+                        <li>Detection sensibility : <input type="range" min="0" max="255" step="1" @bind="_currentCamera.Settings.DetectionSensibility"><p>@_currentCamera.Settings.DetectionSensibility</p></li>
+                        <li>Detection tolerance : <input type="range" min="0" max="255" step="1" @bind="_currentCamera.Settings.DetectionTolerance"><p>@_currentCamera.Settings.DetectionTolerance</p></li>
+
+                        <li>
+                            <p>Detection area boundaries :(Not implemented yet)</p>
+                            <input type="range" min="0" max="@_detectionArea_set2" step="1" @bind="_detectionArea_set1">
+                            <input type="range" min="@_detectionArea_set1" max="@CAM_WIDTH" step="1" @bind="_detectionArea_set2">
+                            <input type="range" min="0" max="@_detectionArea_set4" step="1" @bind="_detectionArea_set3">
+                            <input type="range" min="@_detectionArea_set3" max="@CAM_HEIGHT" step="1" @bind="_detectionArea_set4">
+                        </li>
+                    </ul>
+                }
+                <p>
+                    <button class="btn btn-primary" @onclick="() => { _editing = false; _currentCamera.Settings = _settingsWhenEntered; }">Back</button>
+                    <button class="btn btn-primary" @onclick="() => { _editing = false; _currentCamera.SaveConfig(); }">Confirm</button>
+                </p>
+            </div>
+        }
+        else
+        {
+            <div>
+                <button class="btn btn-primary" @onclick="() => { _editing = true; _settingsWhenEntered = (CameraSettings)_currentCamera.Settings.Clone(); _compressorSliderValue = (int)(_currentCamera.Settings.ImageCompressor * 100); }">Options</button>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    private const int CAM_WIDTH = 640;
+    private const int CAM_HALF_WIDTH = CAM_WIDTH / 2;
+    private const int CAM_HEIGHT = 480;
+
+    private int _detectionArea_set1 = 0;
+    private int _detectionArea_set2 = CAM_WIDTH;
+    private int _detectionArea_set3 = 0;
+    private int _detectionArea_set4 = CAM_HEIGHT;
+
+
+    private bool _disposed = false;
+    private bool _editing = false;
+    private int _index = 0;
+    private string[] _cameraIp;
+    private string _imgSrc;
+    private Camera _currentCamera;
+    private CameraSettings _settingsWhenEntered;
+    //Needed because of a weird bug with sliders and float values
+    private int _compressorSliderValue = 0;
+    private int CompressorSliderValue
+    {
+        get => _compressorSliderValue;
+        set
+        {
+            _compressorSliderValue = value;
+            _currentCamera.Settings.ImageCompressor = value / 100f;
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        _cameraIp = Camera.GetAllCamerasIP();
+        UpdateCurrentCamera();
+        Task.Factory.StartNew(() => { UpdateImageSrc(); });
+    }
+
+    private void Next()
+    {
+        _index++;
+        if (_index >= _cameraIp.Length)
+        {
+            _cameraIp = Camera.GetAllCamerasIP();
+            _index = 0;
+        }
+        UpdateCurrentCamera();
+    }
+
+    private void Previous()
+    {
+        _index--;
+        if (_index < 0)
+        {
+            _cameraIp = Camera.GetAllCamerasIP();
+            _index = _cameraIp.Length - 1;
+        }
+        UpdateCurrentCamera();
+    }
+
+    private void UpdateImageSrc()
+    {
+        while (!_disposed)
+        {
+            if (_cameraIp.Length > 0 && _currentCamera != null)
+            {
+                _imgSrc = _currentCamera.ImageSrc;
+                this.InvokeAsync(StateHasChanged);
+            }
+            Thread.Sleep(50);
+        }
+    }
+
+    private void UpdateCurrentCamera()
+    {
+        if (_cameraIp.Length > 0)
+            Camera.TryGetCamera(_cameraIp[_index], out _currentCamera);
+    }
+
+    void IDisposable.Dispose()
+    {
+        //Not implementing the normal dispose pattern because we know from the doc that blazor will always call dispose for pages that implement IDisposable
+        //We're following Blazor's doc implementation of dispose
+        _disposed = true;
+    }
+}

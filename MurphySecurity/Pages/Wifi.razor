@@ -1,0 +1,52 @@
+﻿@page "/wifi"
+@{
+    // MurphySecurity is a simple home security system designed to be used with Raspberry pi
+    // Copyright (C) 2021 Jérémy LEPROU jerem.jlr@gmail.com
+    //
+    // This program is free software: you can redistribute it and/or modify
+    // it under the terms of the GNU Affero General Public License as published
+    // by the Free Software Foundation, either version 3 of the License, or
+    // (at your option) any later version.
+    //
+    // This program is distributed in the hope that it will be useful,
+    // but WITHOUT ANY WARRANTY, without even the implied warranty of
+    // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    // GNU Affero General Public License for more details.
+    //
+    // You should have received a copy of the GNU Affero General Public License
+    // along with this program.  If not, see <https://www.gnu.org/licenses/>.
+}
+
+<div>
+    <h1>Wifi</h1>
+    <p>SSID : @WifiInfoServer.WifiInfo[0]</p>
+    <p>Password : @WifiInfoServer.WifiInfo[1]</p>
+</div>
+<div>
+    <h3>Change wifi</h3>
+    <p>
+        SSID  : <input @bind="_ssid" />
+    </p>
+    <p>
+        Password WPA2 (leave it empty if no password) : <input @bind="_password" : />
+    </p>
+    <button class="btn btn-primary" @onclick="UpdateWifiInfo">Actualiser</button>
+</div>
+
+@code {
+    //NOT FULLY IMPLEMENTED CLASS/FUNCTIONALITY
+    //HAS NO USE FOR NOW
+    private string _ssid = "";
+    private string _password = "";
+
+    /// <summary>
+    /// Updates wifi info
+    /// </summary>
+    private void UpdateWifiInfo()
+    {
+        WifiInfoServer.WifiInfo[0] = _ssid;
+        WifiInfoServer.WifiInfo[1] = _password;
+        _ssid = _password = "";
+        WifiInfoServer.SaveWifiInfo();
+    }
+}

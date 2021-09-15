@@ -1,0 +1,118 @@
+﻿@page "/alerts"
+@{
+    // MurphySecurity is a simple home security system designed to be used with Raspberry pi
+    // Copyright (C) 2021 Jérémy LEPROU jerem.jlr@gmail.com
+    //
+    // This program is free software: you can redistribute it and/or modify
+    // it under the terms of the GNU Affero General Public License as published
+    // by the Free Software Foundation, either version 3 of the License, or
+    // (at your option) any later version.
+    //
+    // This program is distributed in the hope that it will be useful,
+    // but WITHOUT ANY WARRANTY, without even the implied warranty of
+    // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    // GNU Affero General Public License for more details.
+    //
+    // You should have received a copy of the GNU Affero General Public License
+    // along with this program.  If not, see <https://www.gnu.org/licenses/>.
+}
+@using System.IO;
+@using System.Runtime.InteropServices;
+@using MurphySecurity.Alerts;
+
+<h1>Alerts</h1>
+
+@if (_detailsing)
+{
+    <h2>Videos for alert : @_focusAlert</h2>
+    <ul>
+        @foreach (string recording in _recordings)
+        {
+            <li>
+                <a href="/videowatch/@_focusAlert/@recording">@recording</a>
+            </li>
+        }
+    </ul>
+    <a href="/alerts/">
+        <button class="btn btn-primary" aria-hidden="true" @onclick="() => { _detailsing = false; DeleteDirectoryIfEmpty(); }">Back</button>
+    </a>
+}
+else
+{
+    <div>
+        <ul>
+            @foreach (string alert in _alerts)
+            {
+                <li>
+                    <a href="/alerts" @onclick="() => { _focusAlert = alert; _detailsing = true; _recordings = GetRecordings(alert); }">@alert</a>
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+@code {
+
+    private string[] _alerts = new string[0];
+    private bool _detailsing = false;
+    private string _focusAlert = "";
+    private string[] _recordings = new string[0];
+
+    protected override void OnAfterRender(bool firstRender)
+    {
+        if (firstRender)
+            try
+            {
+                _alerts = GetAlerts();
+                this.InvokeAsync(StateHasChanged);
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception.Message);
+            }
+    }
+
+    private string[] GetAlerts()
+    {
+        string[] alerts = Directory.GetDirectories(Directory.GetCurrentDirectory() + "/" + AlertManager.ALERTS_PATH);
+        for (int i = 0; i < alerts.Length; i++)
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                alerts[i] = alerts[i].Split("/").Last();
+            else
+                alerts[i] = alerts[i].Split("\\").Last();
+        }
+        return alerts;
+    }
+
+    private string[] GetRecordings(string alert)
+    {
+        string[] recordings = Directory.GetFiles(Directory.GetCurrentDirectory() + "/" + AlertManager.ALERTS_PATH + "/" + alert);
+        for (int i = 0; i < recordings.Length; i++)
+        {
+            if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                recordings[i] = recordings[i].Split("/").Last();
+            else
+                recordings[i] = recordings[i].Split("\\").Last();
+        }
+        return recordings;
+    }
+
+    private void DeleteDirectoryIfEmpty()
+    {
+        try
+        {
+            //Deletes alert directory if it's empty
+            if (Directory.GetFiles(Directory.GetCurrentDirectory() + "/wwwroot" + "/Alerts/" + _focusAlert).Length == 0)
+            {
+                Directory.Delete(Directory.GetCurrentDirectory() + "/wwwroot" + "/Alerts/" + _focusAlert);
+                //Refreshes _alerts if an alert directory was deleted
+                _alerts = GetAlerts();
+            }
+        }
+        catch (Exception exception)
+        {
+            Console.WriteLine("Error while trying to delete alert directory : " + exception.Message);
+        }
+    }
+}

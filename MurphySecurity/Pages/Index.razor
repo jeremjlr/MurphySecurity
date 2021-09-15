@@ -1,0 +1,91 @@
+﻿@page "/"
+@{
+    // MurphySecurity is a simple home security system designed to be used with Raspberry pi
+    // Copyright (C) 2021 Jérémy LEPROU jerem.jlr@gmail.com
+    //
+    // This program is free software: you can redistribute it and/or modify
+    // it under the terms of the GNU Affero General Public License as published
+    // by the Free Software Foundation, either version 3 of the License, or
+    // (at your option) any later version.
+    //
+    // This program is distributed in the hope that it will be useful,
+    // but WITHOUT ANY WARRANTY, without even the implied warranty of
+    // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    // GNU Affero General Public License for more details.
+    //
+    // You should have received a copy of the GNU Affero General Public License
+    // along with this program.  If not, see <https://www.gnu.org/licenses/>.
+}
+@implements IDisposable
+@using System.Threading
+@using MurphySecurity.Alerts;
+
+<p>
+    <label class="switch">
+        <input type="checkbox" @bind="_securityStatus" @onclick="OnSecurityStatusChange">
+        <span class="slider round"></span>
+    </label>
+</p>
+
+@if (AlertManager.SecurityIsActive)
+{
+    <h2><font color="green">Security System : ON.</font></h2>
+}
+else
+{
+    <h2><font color="orange">Security System : OFF.</font></h2>
+}
+
+@if (AlertManager.IntrusionAlert.AlertIsOn)
+{
+    <h1><font color="red">INTRUSION DETECTED ! CHECK IT OUT !</font></h1>
+    <p>Alert triggered @AlertManager.IntrusionAlert.SecondsSinceLastAlert seconds ago.</p>
+}
+else if (AlertManager.FireAlert.AlertIsOn)
+{
+    <h1><font color="red">FIRE DETECTED ! CHECK IT OUT !</font></h1>
+    <p>Alert triggered @AlertManager.FireAlert.SecondsSinceLastAlert seconds ago.</p>
+}
+else if (AlertManager.SOSAlert.AlertIsOn)
+{
+    <h1><font color="red">SOS CALL LAUNCHED ! CHECK IT OUT !</font></h1>
+    <p>Alert triggered @AlertManager.SOSAlert.SecondsSinceLastAlert seconds ago.</p>
+}
+else
+{
+    <h2><font color="green">No alert ongoing.</font></h2>
+}
+@code
+{
+    private bool _disposed = false;
+    private bool _securityStatus = AlertManager.SecurityIsActive;
+
+    protected override void OnInitialized()
+    {
+        Task.Factory.StartNew(() => { UpdateStatus(); });
+    }
+
+    private void UpdateStatus()
+    {
+        while (!_disposed)
+        {
+            _securityStatus = AlertManager.SecurityIsActive;
+            this.InvokeAsync(StateHasChanged);
+            Thread.Sleep(500);
+        }
+    }
+
+    private void OnSecurityStatusChange()
+    {
+        if (!_securityStatus)
+            AlertManager.EnableSecurity();
+        else
+            AlertManager.DisableSecurity();
+    }
+
+    void IDisposable.Dispose()
+    {
+        //Not implementing the normal dispose pattern because we know from doc that blazor will always call dispose for pages that implement IDisposable
+        _disposed = true;
+    }
+}
