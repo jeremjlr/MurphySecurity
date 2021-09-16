@@ -97,6 +97,46 @@ bash installcore.sh
 <p>Both can't be on the same pi for now, this will be fixed for the next release.</p>
 
 ## How to Use
+Everything should be pretty straight forward but here are some instructions that might help you use the app.
+
+First, you need an email alert sender, which should be a gmail adresse with the app sec
+
+You can enable/disable camera detection as well as customize the detection algorithm in the camera options.
+I recommend leaving image compression to 0.5 and noise reducer to 5.
+Here is the algorithm for those interested :
+
+```python
+def detect(frame):
+    global baseline_image
+    global base_time
+
+    #Lowers the frame size then turns it gray and blurs it a little bit
+    #Makes the detection faster and easier
+    resized_frame = cv.resize(frame, (int(640*image_compressor), int(480*image_compressor)), interpolation=cv.INTER_CUBIC)
+    gray_frame=cv.cvtColor(resized_frame,cv.COLOR_BGR2GRAY)
+    gray_frame=cv.GaussianBlur(gray_frame,(noise_reducer,noise_reducer),0)
+    #Updates the baseline frame every 10 seconds
+    if baseline_image is None or time.time()-base_time >10:
+        baseline_image=gray_frame
+        base_time = time.time()
+    #Calculates the absolute delta difference between each pixel of the baseline frame and the current frame
+    delta=cv.absdiff(baseline_image,gray_frame)
+    #Passes the result through a threshold filter which removes the values under detection_sensibility
+    threshold=cv.threshold(delta, detection_sensibility, 255, cv.THRESH_BINARY)[1]
+    #Calculates the mean delta 
+    mean = threshold.mean()
+    #Triggers a detection
+    if mean>detection_tolerance:
+        return True
+    else:
+        return False
+```
+
+Adding new 433Mhz detectors/keys is very simple just go to the detectors tab and make your device emit its signals (press the keys' buttons, open/close a door detector, etc...) and the system should detect it automatically. You can then choose a name and a behavior and add it.
+
+You can set up alarms by following the manufacturer instructions and going to the app's parameters to emit the alarm code whenever it is requiered.
+Once it is set up enabling/disabling security should also trigger a little alarm bip.
+There is also a button to generate new codes in case of conflict.
 
 ## Roadmap
 <ul>
