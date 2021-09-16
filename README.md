@@ -6,14 +6,9 @@ MurphySecurity is a simple home security system designed to be used with Raspber
   <li><a href="#about-the-project">About The Project</a></li>
   <li><a href="#features">Features</a></li>
   <li><a href="#pictures-videos">Pictures and Videos</a></li>
-  <li>
-      <a href="#installation">Installation</a>
-      <ul>
-        <li><a href="#installation-core">Core</a></li>
-        <li><a href="#installation-cam">Cameras</a></li>
-      </ul>
-  </li>
+  <li><a href="#installation">Installation</a></li>
   <li><a href="#roadmap">Roadmap</a></li>
+  <li><a href="#faq">FAQ</a></li>
   <li><a href="#license">License</a></li>
   <li><a href="#contact">Contact</a></li>
 </ol>
@@ -55,31 +50,31 @@ I made a script for quick installations but if you're having trouble I also wrot
 ## Pictures and Videos
 
 ## Installation
-<p>
-Both core and camera installations are assumed to be done on a fresh raspberry pi os install.<br/>
+<p>Both core and camera installations are assumed to be done on a fresh raspberry pi os install.<br/>
 Both should also have the same private WiFi network saved for automated connection.<br/>
 MurphySecurity was developped under python 3.7.3, it hasn't been tested with any other python version.<br/>
 Do not forget to also forward ports 80 and 443 to the core raspberry pi which should be assigned a static IP.
 </p>
-<b>[Core only]</b>
-<p>
-If you're installing a core don't forget to set up the GPIO 433Mhz receiver and transmitter using the following indications :<br/>
+
+### [Core only] 433Mhz receiver/transmitter GPIO connections
+<p>If you're installing a core don't forget to set up the GPIO 433Mhz receiver and transmitter using the following indications :<br/>
 Open the GPIO Diagram file in the PythonCore folder.<br/>
 Connect the 433Mhz receiver and transmitter like this :<br/>
 </p>
 
 ```
-Receiver connections-<br/>
-Ground : pin 20 (Ground)<br/>
-+5V : pin 2 (5V power)<br/>
-Data : pin 18 (GPIO 24)<br/>
-<br/>
-Transmitter connections-<br/>
-Ground : pin 6 (Ground)<br/>
-+5V : pin 4 (5V power)<br/>
-Data : pin 37 (GPIO 26)<br/>
+Receiver connections-
+Ground : pin 20 (Ground)
++5V : pin 2 (5V power)
+Data : pin 18 (GPIO 24)
+
+Transmitter connections-
+Ground : pin 6 (Ground)
++5V : pin 4 (5V power)
+Data : pin 37 (GPIO 26)
 ````
 
+### Pi configuration
 <p>Open terminal and type :</p>
 
 ```
@@ -88,12 +83,12 @@ sudo raspi-config
 
 <p>Go to "System Options > Hostname" and change "raspberrypi" to "securitycore"/"securitycam" or whatever name you want.</p>
 <b>[Camera only]</b>
-<p>Then if you're installing a cam also don't forget to enable the camera by going to "Interface Options > Camera" and settingi to "Yes".</p>
-
+<p>Then if you're installing a cam also don't forget to enable the camera by going to "Interface Options > Camera" and setting it to "Yes".</p>
 <p>Quit and reboot.</p>
 
-<p>Download the latest release, unzip, open terminal and run script if your choice. There are scripts to install and uninstall both core and camera.<br/>
-Both can't be on the same pi for now, this will be fixed for next release.</p>
+### Installation scripts
+<p>Download the latest release, unzip, open terminal and run the script of your choice. There are scripts to install and uninstall both core and camera.<br/>
+Both can't be on the same pi for now, this will be fixed for the next release.</p>
 
 ## [Optionnal] If your camera module looks too "pinkish"
 <p>Open :<br/>
@@ -106,9 +101,9 @@ add awb_auto_is_greyworld=1
 <ul>
   <li>The things I'm currently working on :
     <ul>
+      <li>Make it possible for the same raspberry pi to be both the core and a camera.</li>
       <li>Make the system fully compatible with all ONVIF IP cameras.</li>
       <li>Change the way camera stream is sent to the core to increase quality and lower bandwidth.</li>
-      <li>Make it possible for the same raspberry pi to be both the core and a camera.</li>
     </ul>
   </li>
   <li>A non-exhaustive list of interesting features that could be added :
@@ -124,6 +119,20 @@ add awb_auto_is_greyworld=1
     </ul>
   </li>
 </ul>
+
+## FAQ
+<p><b>My camera looks too pinkish, what can I do ?</b><br/>
+This has nothing to do with this project but here is a simple way to somewhat fix it, open:</p>
+
+```
+sudo nano/boot/config.txt
+```
+
+Add at the end:<br/>
+
+```
+awb_auto_is_greyworld=1
+```
 
 ## License
 <p>MurphySecurity is available under AGPL-3.0 License.</p>
