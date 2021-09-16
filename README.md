@@ -61,156 +61,10 @@ Both should also have the same private WiFi network saved for automated connecti
 MurphySecurity was developped under python 3.7.3, it hasn't been tested with any other python version.<br/>
 Do not forget to also forward ports 80 and 443 to the core raspberry pi which should be assigned a static IP.
 </p>
-
-## Core Quick Script Installation
-<p>Open terminal and type :</p>
-
-```
-sudo raspi-config
-```
-
-<p>Go to "System Options > Hostname" and change "raspberrypi" to "securitycore" or whatever name you want.</p>
-<p>Quit and reboot.</p>
-
-#### .NET
-<p>Download the Arm32 SDK from : https://dotnet.microsoft.com/download/dotnet/3.1</p>
-<p>Go to the download folder, open terminal. (F4)<br/>Copy/paste the following lines (remember to change the DOTNET_FILE value to your file name):</p>
-
-```
-  DOTNET_FILE=xxxx
-  export DOTNET_ROOT=$HOME/dotnet
-  mkdir -p "$DOTNET_ROOT" && tar zxf "$DOTNET_FILE" -C "$DOTNET_ROOT"
-  export PATH=$PATH:$DOTNET_ROOT
-  dotnet --version
-```
-
-<p>Version should return 3.1.XXX</p>
-<p>Download the latest release, unzip and run the core installation script.</p>
-
-## Cameras Quick Script Installation
-<p>Open terminal and type :</p>
-
-```
-sudo raspi-config
-```
-
-<p>Go to "System Options > Hostname" and change "raspberrypi" to "securitycam".</p>
-<p>Then go to "Interface Options > Camera" and choose "Yes".</p>
-<p>Quit and reboot.</p>
-<p>Download the latest release, unzip and run the camera installation script.</p>
-<p>[Optionnal]You shouldn't always need this part but if you're having troubles, you can always add the core raspberry pi static IP to the local hosts of the cameras by openning the following file :</p>
-
-```
-sudo nano /etc/hosts
-```
-
-<p>Then adding :</p>
-
-```
-X.X.X.X securitycore
-```
-
-<p>at the end of the file, X.X.X.X being the IP you assigned to the core.</p>
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!ADD ERROR NAME FROM LOG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-## Core Step-by-Step Installation
-<p>Open terminal and type :</p>
-
-```
-sudo raspi-config
-```
-
-<p>Go to "System Options > Hostname" and change "raspberrypi" to "securitycore".</p>
-<p>Quit and reboot.</p>
-<p>Open terminal and type :</p>
-
-```
-sudo apt-get update
-sudo apt-get upgrade
-sudo python3 -m pip install --upgrade pip
-mkdir /home/pi/coredata
-```
-
-#### .NET
-<p>Download the Arm32 SDK from : https://dotnet.microsoft.com/download/dotnet/3.1</p>
-<p>Go to the download folder, open terminal. (F4)<br/>Copy/paste the following lines (remember to change the DOTNET_FILE value to your file name):</p>
-
-```
-DOTNET_FILE=xxxx
-export DOTNET_ROOT=$HOME/dotnet
-mkdir -p "$DOTNET_ROOT" && tar zxf "$DOTNET_FILE" -C "$DOTNET_ROOT"
-export PATH=$PATH:$DOTNET_ROOT
-sudo env "PATH=$PATH" dotnet dev-certs https --clean
-sudo env "PATH=$PATH" dotnet dev-certs https
-```
-
-<p>Version should return 3.1.XXX</p>
-
-#### Samba
-<p>Open terminal and copy/paste those lines :</p>
-
-```
-sudo apt-get install samba
-sudo nano /etc/samba/smb.conf
-```
-
-<p>Then copy/paste the following at the end of the openned file :</p>
-
-```
-[coredata]
-comment = Pi Shared Folder
-path = /home/pi/coredata
-browsable = yes
-writable = yes
-guest ok = yes
-read only = no
-create mask = 0777
-force create mode = 0777
-directory mask = 0777
-force directory mode = 0777
-force user = root
-```
-
-<p>Save and exit.</p>
-
-#### Files
-<p>Download the latest release, unzip and place the folder in the coredata folder. Then place all the files in Python scripts/Core scripts/ in the coredata folder as well.</p>
-
-#### Autostart on boot (Blazor)
-<p>Open terminal, copy/paste the following :</p>
-<p>sudo nano /etc/systemd/system/kestrel-murphysecurity.service</p>
-<p>Then copy/paste the following in the openned file :</p>
+<b>[Core only]</b>
 <p>
-[Unit]<br/>
-Description=.NET Web API for Murphy Security<br/>
-<br/>
-[Service]<br/>
-WorkingDirectory=/home/pi/coredata/publish<br/>
-ExecStart=/home/pi/dotnet/dotnet /home/pi/coredata/publish/CameraMonitoringFrontEnd.dll<br/>
-Restart=always<br/>
-# Restart service after 10 seconds if the dotnet service crashes:<br/>
-RestartSec=10<br/>
-SyslogIdentifier=murphy-dotnet<br/>
-User=root<br/>
-<br/>
-[Install]<br/>
-WantedBy=multi-user.target
-</p>
-<p>Save and exit.</p>
-<p>Finally, copy/paste the following lines :</p>
-<p>
-sudo systemctl enable kestrel-murphysecurity.service<br/>
-sudo systemctl start kestrel-murphysecurity.service<br/>
-sudo systemctl status kestrel-murphysecurity.service<br/>
-</p>
-<p>At this point the core web app is ready and the status should return up and running.</p>
-
-#### rpi-rf
-<p>We now have to setup the 433Mhz part.</p>
-<p>Open terminal and copy/paste (upgrading pip3 first might be needed):</p>
-<p>sudo pip3 install rpi-rf</p>
-<p>
-Open the GPIO Diagram file in the Python scripts/Core scripts/ folder.<br/>
+If you're installing a core don't forget to set up the GPIO 433Mhz receiver and transmitter using the following indications :<br/>
+Open the GPIO Diagram file in the PythonCore folder.<br/>
 Connect the 433Mhz receiver and transmitter like this :<br/>
 <br/>
 Receiver connections-<br/>
@@ -224,98 +78,22 @@ Ground : pin 6 (Ground)<br/>
 Data : pin 37 (GPIO 26)<br/>
 </p>
 
-#### Autostart on boot (Python)
-<p>Open terminal, copy/paste the following :</p>
-<p>sudo nano /etc/systemd/system/kestrel-murphysecuritypython.service</p>
-<p>Then copy/paste the following in the openned file :</p>
-<p>
-[Unit]<br/>
-Description=Python3 scripts for Murphy Security<br/>
-<br/>
-[Service]<br/>
-WorkingDirectory=/home/pi/coredata<br/>
-ExecStart=python3 /home/pi/coredata/radioreceivercore.py<br/>
-Restart=always<br/>
-# Restart service after 10 seconds if the dotnet service crashes:<br/>
-RestartSec=10<br/>
-SyslogIdentifier=murphy-python<br/>
-User=root<br/>
-<br/>
-[Install]<br/>
-WantedBy=multi-user.target
-</p>
-<p>Save and exit.</p>
-<p>Finally, copy/paste the following lines :</p>
-<p>
-sudo systemctl enable kestrel-murphysecuritypython.service<br/>
-sudo systemctl start kestrel-murphysecuritypython.service<br/>
-sudo systemctl status kestrel-murphysecuritypython.service<br/>
-</p>
-<p>At this point the radioreceiver is ready and the status should return up and running.</p>
-
-## Cameras Step-by-Step Installation
 <p>Open terminal and type :</p>
-<p>sudo raspi-config</p>
-<p>Go to "System Options > Hostname" and change "raspberrypi" to "securitycam".</p>
-<p>Then go to "Interface Options > Camera" and choose "Yes".</p>
+
+```
+sudo raspi-config
+```
+
+<p>Go to "System Options > Hostname" and change "raspberrypi" to "securitycore"/"securitycam" or whatever name you want.</p>
+<b>[Camera only]</b>
+<p>Then if you're installing a cam also don't forget to enable the camera by going to "Interface Options > Camera" and settingi to "Yes".</p>
+
 <p>Quit and reboot.</p>
-<p>Open terminal and copy/paste those lines :</p>
-<p>
-sudo apt-get update<br/>
-sudo apt-get upgrade<br/>
-python3 -m pip install --upgrade pip<br/>
-mkdir /home/pi/camdata<br/>
-mkdir /home/pi/coremount
-</p>
 
-#### opencv-contrib-python and numpy
-<p>Open terminal and copy/paste those lines :</p>
-<p>sudo apt install libaec0 libaom0 libatk-bridge2.0-0 libatk1.0-0 libatlas3-base libatspi2.0-0 libavcodec58 libavformat58 libavutil56 libbluray2 libcairo-gobject2 libcairo2 libchromaprint1 libcodec2-0.8.1 libcroco3 libdatrie1 libdrm2 libepoxy0 libfontconfig1 libgdk-pixbuf2.0-0 libgfortran5 libgme0 libgraphite2-3 libgsm1 libgtk-3-0 libharfbuzz0b libhdf5-103 libilmbase23 libjbig0 libmp3lame0 libmpg123-0 libogg0 libopenexr23 libopenjp2-7 libopenmpt0 libopus0 libpango-1.0-0 libpangocairo-1.0-0 libpangoft2-1.0-0 libpixman-1-0 librsvg2-2 libshine3 libsnappy1v5 libsoxr0 libspeex1 libssh-gcrypt-4 libswresample3 libswscale5 libsz2 libthai0 libtheora0 libtiff5 libtwolame0 libva-drm2 libva-x11-2 libva2 libvdpau1 libvorbis0a libvorbisenc2 libvorbisfile3 libvpx5 libwavpack1 libwayland-client0 libwayland-cursor0 libwayland-egl1 libwebp6 libwebpmux3 libx264-155 libx265-165 libxcb-render0 libxcb-shm0 libxcomposite1 libxcursor1 libxdamage1 libxfixes3 libxi6 libxinerama1 libxkbcommon0 libxrandr2 libxrender1 libxvidcore4 libzvbi0<br/>
-python3 -m pip install opencv-contrib-python<br/>
-python3 -m pip install -U numpy
-</p>
+<p>Download the latest release, unzip, open terminal and run script if your choice. There are scripts to install and uninstall both core and camera.<br/>
+Both can't be on the same pi for now, this will be fixed for next release.</p>
 
-#### Files
-<p>Download the latest release, unzip and place all the files in Python scripts/Camera scripts/ in the camdata folder.</p>
-
-#### Core Hostname
-<p>[Optionnal]You shouldn't always need this part but if you're having troubles, you can always add the core raspberry pi static IP to the local hosts of the cameras by openning the following file :</p>
-<p>sudo nano /etc/hosts</p>
-<p>Then adding :<br/>
-X.X.X.X securitycore<br/>
-at the end of the file, X.X.X.X being the IP you assigned to the core.</p>
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!ADD ERROR NAME FROM LOG!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-#### Autostart on boot (Python)
-<p>Open terminal, copy/paste the following :</p>
-<p>sudo nano /etc/systemd/system/kestrel-murphysecuritypythoncam.service</p>
-<p>Then copy/paste the following in the openned file :</p>
-<p>
-[Unit]<br/>
-Description=Python3 scripts for Murphy Security<br/>
-<br/>
-[Service]<br/>
-WorkingDirectory=/home/pi/camdata<br/>
-ExecStart=python3 /home/pi/camdata/main.py<br/>
-Restart=always<br/>
-# Restart service after 10 seconds if the dotnet service crashes:<br/>
-RestartSec=10<br/>
-SyslogIdentifier=murphy-python<br/>
-User=pi<br/>
-<br/>
-[Install]<br/>
-WantedBy=multi-user.target
-</p>
-<p>Save and exit.</p>
-<p>Finally, copy/paste the following lines :</p>
-<p>
-sudo systemctl enable kestrel-murphysecuritypythoncam.service<br/>
-sudo systemctl start kestrel-murphysecuritypythoncam.service<br/>
-sudo systemctl status kestrel-murphysecuritypythoncam.service<br/>
-</p>
-<p>At this point the camera is ready and the status should return up and running.</p>
-
-#### [Optionnal] If your camera module looks too "pinkish"
+## [Optionnal] If your camera module looks too "pinkish"
 <p>Open :<br/>
 sudo nano/boot/config.txt<br/>
 Add at the end :<br/>
@@ -328,6 +106,7 @@ add awb_auto_is_greyworld=1
     <ul>
       <li>Make the system fully compatible with all ONVIF IP cameras.</li>
       <li>Change the way camera stream is sent to the core to increase quality and lower bandwidth.</li>
+      <li>Make it possible for the same raspberry pi to be both the core and a camera.</li>
     </ul>
   </li>
   <li>A non-exhaustive list of interesting features that could be added :
