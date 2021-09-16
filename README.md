@@ -66,7 +66,9 @@ Do not forget to also forward ports 80 and 443 to the core raspberry pi which sh
 If you're installing a core don't forget to set up the GPIO 433Mhz receiver and transmitter using the following indications :<br/>
 Open the GPIO Diagram file in the PythonCore folder.<br/>
 Connect the 433Mhz receiver and transmitter like this :<br/>
-<br/>
+</p>
+
+```
 Receiver connections-<br/>
 Ground : pin 20 (Ground)<br/>
 +5V : pin 2 (5V power)<br/>
@@ -76,7 +78,7 @@ Transmitter connections-<br/>
 Ground : pin 6 (Ground)<br/>
 +5V : pin 4 (5V power)<br/>
 Data : pin 37 (GPIO 26)<br/>
-</p>
+````
 
 <p>Open terminal and type :</p>
 
