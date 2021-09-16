@@ -99,7 +99,12 @@ bash installcore.sh
 ## How to Use
 Everything should be pretty straight forward but here are some instructions that might help you use the app.
 
-First, you need an email alert sender, which should be a gmail adresse with the app sec
+First, you need an email alert sender, which should be a gmail address with less secure apps access enabled.
+You can enable it here : https://myaccount.google.com/security
+This will be fixed in further releases.
+You can then add the email sender on the security app under the emails tab.
+Also add at least one email for alerts to be sent to.
+Now click the send test email alert and make sure you received it.
 
 You can enable/disable camera detection as well as customize the detection algorithm in the camera options.
 I recommend leaving image compression to 0.5 and noise reducer to 5.
@@ -132,10 +137,12 @@ def detect(frame):
         return False
 ```
 
+I recommend using camera modules which are always recording 
+
 Adding new 433Mhz detectors/keys is very simple just go to the detectors tab and make your device emit its signals (press the keys' buttons, open/close a door detector, etc...) and the system should detect it automatically. You can then choose a name and a behavior and add it.
 
 You can set up alarms by following the manufacturer instructions and going to the app's parameters to emit the alarm code whenever it is requiered.
-Once it is set up enabling/disabling security should also trigger a little alarm bip.
+Once it is set up, enabling/disabling security should also trigger a little alarm bip.
 There is also a button to generate new codes in case of conflict.
 
 ## Roadmap
