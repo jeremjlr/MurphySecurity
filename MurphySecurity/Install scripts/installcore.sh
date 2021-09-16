@@ -13,8 +13,8 @@ mkdir -p "$DOTNET_ROOT" && tar zxf "$DOTNET_FILE" -C "$DOTNET_ROOT"
 export PATH=$PATH:$DOTNET_ROOT
 sudo env "PATH=$PATH" dotnet dev-certs https --clean
 sudo env "PATH=$PATH" dotnet dev-certs https
-sudo cp -f /etc/samba/smb.conf /etc/default/
 sudo apt install -y samba
+sudo cp -f /etc/samba/smb.conf /etc/default/
 sudo tee -a /etc/samba/smb.conf <<<"
 [coredata]
 comment = Pi Shared Folder
