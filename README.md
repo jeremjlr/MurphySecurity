@@ -1,5 +1,7 @@
 # MurphySecurity (v0.1)
-MurphySecurity is a simple home security system designed to be used with Raspberry pi.
+<p>MurphySecurity is a simple home security system designed to be used with Raspberry pis.<br/>
+You can monitor your home, setup a camera with movement detection, setup multiple detection devices (door sensors, movement sensors, smoke detectors, etc), receive emails when any alert is triggered (Intrusion, Fire or SOS alerts), access and control everything from anywhere with any web browser thanks to a .NET Blazor web application, or even setup a remote key to easily turn on or off the system as well as launch SOS alerts... all of that with (at least) a single Raspberry Pi :)
+</p>
 
 ## Table of Contents
 <ol>
@@ -18,7 +20,8 @@ MurphySecurity is a simple home security system designed to be used with Raspber
 <p align="center">
 <img src="MurphySecurity/Media/MainScreen.png" width="480" height="270">
 </p>
-<p>MurphySecurity is a project that was initially started as a small experiment project to combine raspberry pis using python scripts with a .NET CORE 3.1 web application made with Blazor.<br/>The goal was to have the Blazor app run natively on a raspberry pi while other raspberry pis would be used as cameras using python scripts. Both entities communicate using UDP and TCP sockets on a private WiFi network.</p>
+<p>MurphySecurity is a project that was initially started as a small experiment project to combine raspberry pis using python scripts with a .NET CORE 3.1 web application made with Blazor.<br/>The goal was to have the Blazor app run natively on a raspberry pi while other raspberry pis would be used as cameras using python scripts. Both entities communicate using UDP and TCP sockets on a private WiFi network.<br/>
+However, if you prefer, you can install both the core and camera modules on the same pi and it will work just fine.</p>
 <p>Note that while I plan on making the system compatible with ONVIF IP cameras, I want to keep the possibilty to still have fully custom rpi cameras. So if I ever want to add a lot of custom image processing (face detection, object recognition, custom functionalities, etc..), I want to be able to do it fully camera side on the rpi camera and only send relevent data to the core. It was the main reason why I initially wanted the cameras to also be raspberry pis instead of just having a core rpi working with ONVIF cameras.</p>
 <p>It ended up being a pretty interesting project combining different technical aspects (Blazor, Python, C#, Raspberry Pi/Linux, Networking, Movement detection, 433Mhz detectors, etc..) so I decided to push it to a functional state.<br/>This project can have an interesting educational purpose. If you plan on using it in such a way, please let me know.</p>
 <p>I made scripts to install/uninstall everything so while the installation process might seem a bit tedious, it is acutally very straight forward.</p>
@@ -28,22 +31,23 @@ MurphySecurity is a simple home security system designed to be used with Raspber
 <ul>
   <li>One raspberry pi is used as the core device, it can be accessed by ip with any web browser.</li>
   <li>Both core and cameras auto restart in case of crash or power-cut.</li>
+  <li>The core raspberry pi can also be used as a camera.</li>
   <li>The system doesn't stop working/recording in case of internet failure.</li>
   <li>The system reconnects automatically once internet is back up.</li>
   <li>Easy plug&play once installation is done on the raspberry pis.</li>
+  <li>Camera connection to the core if fully automated, it only needs to be on the same network.</li>
   <li>Very easy to setup thanks to installation scripts.</li>
-  <li>The system has distant login/logout with automatic disconnect after 6 hours.</li>
-  <li>Automatically sends an email with the new ip to access core if it has changed.</li>
+  <li>The system has distant login/logout with automated disconnection after 6 hours.</li>
+  <li>Automatically sends an email with the new ip to access the web app if it has changed.</li>
   <li>Can send alerts to multiple emails.</li>
   <li>Camera recordings can be viewed/deleted from the web app.</li>
   <li>Camera recordings can be downloaded from the web app.</li>
-  <li>Camera connection to core if fully automated.</li>
   <li>Works with raspberry pi night vision cameras.</li>
   <li>The camera detection algorithm is customizable from the web app.</li>
   <li>Compatible with most 433Mhz detectors, alarms or keys. It will both receive signals from detectors/keys and send signals to trigger alarms.</li> 
-  <li>3 type of alerts, intrusion alerts from 433Mhz detectors and camera detection, fire alerts from 433Mhz fire detectors, SOS alerts from keys' SOS buttons.</li>
+  <li>There are 3 types of alerts, intrusion alerts from 433Mhz detectors and camera detection, fire alerts from 433Mhz smoke detectors, SOS alerts from keys' SOS buttons.</li>
   <li>Alerts are repeated (email sent again) every 3 minutes until dealt with.</li>
-  <li>System can easily be turned on or off either from the web app or 433Mhz keys.</li>
+  <li>The system can easily be turned on or off either from the web app or 433Mhz keys.</li>
   <li>It is very easy to add new 433Mhz devices.</li>
 </ul>
 
@@ -94,8 +98,6 @@ i.e :</p>
 bash installcore.sh
 ```
 
-<p>Both can't be on the same pi for now, this will be fixed for the next release.</p>
-
 ## How to Use
 Everything should be pretty straight forward but here are some instructions that might help you use the app.
 
@@ -137,11 +139,11 @@ def detect(frame):
         return False
 ```
 
-I recommend using camera modules which are always recording 
+I recommend using camera modules which are always recording in night vision (those who always look pinkish) because for now if a camera switches from day vision to night vision, it might trigger the detection. I don't have such camera modules so I haven't been able to test it yet.
 
-Adding new 433Mhz detectors/keys is very simple just go to the detectors tab and make your device emit its signals (press the keys' buttons, open/close a door detector, etc...) and the system should detect it automatically. You can then choose a name and a behavior and add it.
+Adding new 433Mhz detectors/keys is very simple. Just go to the detectors tab and make your device emit its signals (press the keys' buttons, open/close a door detector, etc...) and the system should detect it automatically. You can then choose a name and a behavior and add it.
 
-You can set up alarms by following the manufacturer instructions and going to the app's parameters to emit the alarm code whenever it is requiered.
+You can set up alarms by following the manufacturer instructions and going to the parameters tab to emit the core's 433Mhz code whenever it is requiered.
 Once it is set up, enabling/disabling security should also trigger a little alarm bip.
 There is also a button to generate new codes in case of conflict.
 
