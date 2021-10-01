@@ -36,6 +36,7 @@ namespace MurphySecurity
             //Triggers the EmailSender static constructor
             EmailsSender.Trigger();
             CreateHostBuilder(args).Build().Run();
+            ///
         }
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
