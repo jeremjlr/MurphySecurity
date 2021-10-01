@@ -51,6 +51,7 @@ frame_tolerance = 1
 
 baseline_image = None
 base_time = time.time()
+detection_count = 0
 
 def handshake_udpserver():
     # 0.0.0.0 because this is a server
@@ -185,7 +186,7 @@ def load_config():
 def save_config():
     try:
         f = open("config.txt", "w")
-        toSave = str(camera_id)+"\n"+str(detection_enabled)+"\n"+str(new_image_compressor)+"\n"+str(noise_reducer)+"\n"+str(detection_sensibility)+"\n"+str(detection_tolerance+"\n"+str(frame_tolerance))
+        toSave = str(camera_id)+"\n"+str(detection_enabled)+"\n"+str(new_image_compressor)+"\n"+str(noise_reducer)+"\n"+str(detection_sensibility)+"\n"+str(detection_tolerance)+"\n"+str(frame_tolerance)
         f.write(toSave)
         f.close()
         cameraLogger.info("Config saved")
@@ -268,6 +269,7 @@ def alert_server():
 def detect(frame):
     global baseline_image
     global base_time
+    global detection_count
 
     #Lowers the frame size then turns it gray and blurs it a little bit
     #Makes the detection faster and easier
@@ -278,6 +280,7 @@ def detect(frame):
     if baseline_image is None or time.time()-base_time >10:
         baseline_image=gray_frame
         base_time = time.time()
+        detection_count = 0
     #Calculates the absolute delta difference between each pixel of the baseline frame and the current frame
     delta=cv.absdiff(baseline_image,gray_frame)
     #Passes the result through a threshold filter which removes the values under detection_sensibility
@@ -286,7 +289,12 @@ def detect(frame):
     mean = threshold.mean()
     #Triggers a detection
     if mean>detection_tolerance:
-        return True
+        detection_count += 1
+        baseline_image = gray_frame
+        if detection_count > frame_tolerance :
+            return True
+        else :
+            return False
     else:
         return False
     
@@ -311,5 +319,13 @@ def frame_encoding(frame, udpSocket, address):
 
 def video_writing(video_writer, frame):
     video_writer.write(frame)
-
+    
+def check_if_pizero():
+    global BYPASS_RECORDING
+    
+    result = os.popen("cat /proc/device-tree/model").read()
+    split = result.split(" ")
+    if split[2] == 'Zero' :
+        cameraLogger.info("Pi is zero, bypassing recording")
+        BYPASS_RECORDING = True
 
