@@ -23,3 +23,4 @@ User=pi
 WantedBy=multi-user.target"
 sudo systemctl enable kestrel-murphysecuritypythoncam.service
 sudo systemctl start kestrel-murphysecuritypythoncam.service
+cp -f uninstallcam.sh /home/pi/camdata
