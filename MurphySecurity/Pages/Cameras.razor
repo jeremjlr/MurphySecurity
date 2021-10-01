@@ -66,14 +66,14 @@
                         <li>Noise reducer : <input type="range" min="1" max="55" step="2" @bind="_currentCamera.Settings.NoiseReducer"><p>@_currentCamera.Settings.NoiseReducer</p></li>
                         <li>Detection sensibility : <input type="range" min="0" max="255" step="1" @bind="_currentCamera.Settings.DetectionSensibility"><p>@_currentCamera.Settings.DetectionSensibility</p></li>
                         <li>Detection tolerance : <input type="range" min="0" max="255" step="1" @bind="_currentCamera.Settings.DetectionTolerance"><p>@_currentCamera.Settings.DetectionTolerance</p></li>
-
-                        <li>
+                        <li>Frame tolerance : <input type="range" min="1" max="10" step="1" @bind="_currentCamera.Settings.FrameTolerance"><p>@_currentCamera.Settings.FrameTolerance</p> </li>
+                        <!--<li>
                             <p>Detection area boundaries :(Not implemented yet)</p>
                             <input type="range" min="0" max="@_detectionArea_set2" step="1" @bind="_detectionArea_set1">
                             <input type="range" min="@_detectionArea_set1" max="@CAM_WIDTH" step="1" @bind="_detectionArea_set2">
                             <input type="range" min="0" max="@_detectionArea_set4" step="1" @bind="_detectionArea_set3">
                             <input type="range" min="@_detectionArea_set3" max="@CAM_HEIGHT" step="1" @bind="_detectionArea_set4">
-                        </li>
+                        </li>-->
                     </ul>
                 }
                 <p>
