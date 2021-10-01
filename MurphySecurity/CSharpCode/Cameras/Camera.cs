@@ -190,6 +190,7 @@ namespace MurphySecurity.Cameras
                 Settings.NoiseReducer = int.Parse(readInfo[2]);
                 Settings.DetectionSensibility = int.Parse(readInfo[3]);
                 Settings.DetectionTolerance = int.Parse(readInfo[4]);
+                Settings.FrameTolerance = int.Parse(readInfo[5]);
 
                 while (!_closed)
                 {
@@ -216,7 +217,7 @@ namespace MurphySecurity.Cameras
                     lock (_locker)
                     {
                         string imageCompressorString = Settings.ImageCompressor.ToString("F1", new CultureInfo("en-US").NumberFormat);
-                        dataStatus = Settings.Id + "\n" + Settings.DetectionEnabled + "\n" + imageCompressorString + "\n" + Settings.NoiseReducer + "\n" + Settings.DetectionSensibility + "\n" + Settings.DetectionTolerance + "\n" + record + "\n" + _recordPath + "\n" + _needToSaveConfig;
+                        dataStatus = Settings.Id + "\n" + Settings.DetectionEnabled + "\n" + imageCompressorString + "\n" + Settings.NoiseReducer + "\n" + Settings.DetectionSensibility + "\n" + Settings.DetectionTolerance + "\n" + Settings.FrameTolerance + "\n" + record + "\n" + _recordPath + "\n" + _needToSaveConfig;
                         dataBytes = Encoding.ASCII.GetBytes(dataStatus);
                         dataClient.Send(dataBytes, dataBytes.Length);
                         if (_needToSaveConfig)

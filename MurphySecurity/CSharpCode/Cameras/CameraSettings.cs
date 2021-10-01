@@ -29,6 +29,7 @@ namespace MurphySecurity.Cameras
         public int NoiseReducer { get; set; }
         public int DetectionSensibility { get; set; }
         public int DetectionTolerance { get; set; }
+        public int FrameTolerance { get; set; }
 
         public object Clone()
         {
@@ -39,6 +40,7 @@ namespace MurphySecurity.Cameras
             clone.NoiseReducer = NoiseReducer;
             clone.DetectionSensibility = DetectionSensibility;
             clone.DetectionTolerance = DetectionTolerance;
+            clone.FrameTolerance = FrameTolerance;
             return clone;
         }
     }
