@@ -60,4 +60,5 @@ User=pi
 WantedBy=multi-user.target"
 sudo systemctl enable kestrel-murphysecuritypython.service
 sudo systemctl start kestrel-murphysecuritypython.service
+cp -f uninstallcore.sh /home/pi/coredata
 
