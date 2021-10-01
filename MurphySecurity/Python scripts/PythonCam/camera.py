@@ -28,6 +28,8 @@ import pathlib
 
 import logger
 
+BYPASS_RECORDING = False
+
 coreIP = None   
 newCore = True
 record = False
@@ -45,6 +47,7 @@ image_compressor = 0.5
 noise_reducer = 5
 detection_sensibility = 20
 detection_tolerance = 1
+frame_tolerance = 1
 
 baseline_image = None
 base_time = time.time()
@@ -111,14 +114,15 @@ def image_udpserver():
                 recording = False
                 record = False
                 size = (640,480)
-
-                mount_videoFolder()   
+                
+                if not BYPASS_RECORDING :
+                    mount_videoFolder()   
                 video_writer = None
                 while newCore==False:
                     _,frame = cam.read() 
                     #for debugging
                     #start_time = time.time()
-                    if not recording and detection_enabled:
+                    if not recording and detection_enabled :
                         detected = detect(frame)
                         if detected :
                             #Put some blue text on the frame
@@ -126,11 +130,11 @@ def image_udpserver():
                             cv.putText(frame,'Detected !',(0,100), font, 1,(255,0,0),2,cv.LINE_AA)
                             alertTime = get_time_str()
                             cameraLogger.info("Intrusion detected !")
-                    if recording and not record :
+                    if recording and not record and not BYPASS_RECORDING :
                         video_writer.release()
                         recording = False
                         cameraLogger.info("Recording ended")
-                    elif not recording and record :
+                    elif not recording and record and not BYPASS_RECORDING :
                         video_writer = cv.VideoWriter("/home/pi/coremount/DotNetCore/wwwroot/Alerts/"+recordPath+".mp4",cv.VideoWriter_fourcc(*'avc1'), 15, size)
                         recording = True
                         cameraLogger.info("Recording started")
@@ -159,6 +163,7 @@ def load_config():
     global noise_reducer
     global detection_sensibility
     global detection_tolerance
+    global frame_tolerance
     try:
         f = open("config.txt", "r")
         configLines = f.read().splitlines()
@@ -172,6 +177,7 @@ def load_config():
         noise_reducer = int(configLines[3])
         detection_sensibility = int(configLines[4])
         detection_tolerance = int(configLines[5])
+        frame_tolerance = int(configLines[6])
         cameraLogger.info("Config loaded")
     except Exception as exception:
         cameraLogger.error(exception.args)
@@ -179,7 +185,7 @@ def load_config():
 def save_config():
     try:
         f = open("config.txt", "w")
-        toSave = str(camera_id)+"\n"+str(detection_enabled)+"\n"+str(new_image_compressor)+"\n"+str(noise_reducer)+"\n"+str(detection_sensibility)+"\n"+str(detection_tolerance)
+        toSave = str(camera_id)+"\n"+str(detection_enabled)+"\n"+str(new_image_compressor)+"\n"+str(noise_reducer)+"\n"+str(detection_sensibility)+"\n"+str(detection_tolerance+"\n"+str(frame_tolerance))
         f.write(toSave)
         f.close()
         cameraLogger.info("Config saved")
@@ -194,6 +200,7 @@ def data_server():
     global noise_reducer
     global detection_sensibility
     global detection_tolerance
+    global frame_tolerance
     global record
     global recordPath
 
@@ -210,7 +217,7 @@ def data_server():
                 address = bytesAddressPair[1]
 
                 #We don't have to send camera_id because we already answer the handshake with it
-                configData = str(detection_enabled)+"\n"+str(image_compressor)+"\n"+str(noise_reducer)+"\n"+str(detection_sensibility)+"\n"+str(detection_tolerance)
+                configData = str(detection_enabled)+"\n"+str(image_compressor)+"\n"+str(noise_reducer)+"\n"+str(detection_sensibility)+"\n"+str(detection_tolerance)+"\n"+str(frame_tolerance)
                 udpServerSocket.sendto(configData.encode("ascii"), address)
                 udpServerSocket.setblocking(True)
                 udpServerSocket.settimeout(7)
@@ -228,12 +235,13 @@ def data_server():
                     noise_reducer = int(configList[3])
                     detection_sensibility = int(configList[4])
                     detection_tolerance = int(configList[5])
-                    if configList[6] == "True":
+                    frame_tolerance = int(configList[6])
+                    if configList[7] == "True":
                         record = True
                     else:
                         record = False
-                    recordPath = configList[7]
-                    if configList[8] == "True":
+                    recordPath = configList[8]
+                    if configList[9] == "True":
                         save_config()
         except Exception as exception :
             cameraLogger.critical(exception.args)
@@ -303,3 +311,5 @@ def frame_encoding(frame, udpSocket, address):
 
 def video_writing(video_writer, frame):
     video_writer.write(frame)
+
+
