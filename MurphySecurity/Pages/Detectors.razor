@@ -188,7 +188,6 @@ else
     private void DeleteDetector()
     {
         DetectorManager.TryRemoveDetector(_detectorToEdit);
-        DetectorManager.SaveDetectors();
         _editing = false;
     }
 
@@ -200,20 +199,16 @@ else
             _selectedType = 0;
         else if (waitingDetector.Length == 4)
             _selectedType = 2;
-        //If trying to validate a detector with an unsupported length, Door/Window will be default and user will not be given the choice to change it
-        else
-            _selectedType = 0;
         _detectorToValidate = waitingDetector;
         _validating = true;
     }
 
     private void ValidateDetector(int detectorType)
     {
+        //If supported length we sort and add the detector otherwise we ignore it
         Array.Sort(_detectorToValidate);
         if (detectorType == 0)
         {
-            //If trying to validate a detector with an unsupported length, Door/Window will be default and user will not be given the choice to change it
-            //This is why we have to check length and ignore if it's not supported
             if (_detectorToValidate.Length == 1)
                 DetectorManager.TryAddDetector(new DoorWindowDetector(_detectorToValidate[0], -1, "DoorWindowDetector"));
             else if (_detectorToValidate.Length == 2)
@@ -221,18 +216,20 @@ else
         }
         else if (detectorType == 1)
         {
-            DetectorManager.TryAddDetector(new MovementDetector(_detectorToValidate[0], "MovementDetector"));
+            if (_detectorToValidate.Length == 1)
+                DetectorManager.TryAddDetector(new MovementDetector(_detectorToValidate[0], "MovementDetector"));
         }
         else if (detectorType == 2)
         {
-            //Close code is the smaller code for keys, instead of Open code like DoorWindowDetectors
-            DetectorManager.TryAddDetector(new KeyDetector(_detectorToValidate[1], _detectorToValidate[0], _detectorToValidate[2], _detectorToValidate[3], "KeyDetector"));
+            if (_detectorToValidate.Length == 4)
+                //Close code is the smaller code for keys, instead of Open code like DoorWindowDetectors
+                DetectorManager.TryAddDetector(new KeyDetector(_detectorToValidate[1], _detectorToValidate[0], _detectorToValidate[2], _detectorToValidate[3], "KeyDetector"));
         }
         else if (detectorType == 3)
         {
-            DetectorManager.TryAddDetector(new SmokeDetector(_detectorToValidate[0], "SmokeDetector"));
+            if (_detectorToValidate.Length == 1)
+                DetectorManager.TryAddDetector(new SmokeDetector(_detectorToValidate[0], "SmokeDetector"));
         }
-        DetectorManager.SaveDetectors();
     }
 
     private void UpdateDetectors()

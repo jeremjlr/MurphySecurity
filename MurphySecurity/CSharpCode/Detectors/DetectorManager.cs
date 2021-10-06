@@ -250,6 +250,8 @@ namespace MurphySecurity.Detectors
                 _detectorDictionnary.TryRemove(key_detector.HomeCode, out detector);
                 _detectorDictionnary.TryRemove(key_detector.SOSCode, out detector);
             }
+            //Always save after removing a detector
+            SaveDetectors();
         }
 
         public static void SaveDetectors()
@@ -319,6 +321,14 @@ namespace MurphySecurity.Detectors
                 _detectorDictionnary.TryAdd(key_detector.SOSCode, key_detector);
                 RemoveWaitingDetector(new long[] { key_detector.OpenCode, key_detector.CloseCode, key_detector.HomeCode, key_detector.SOSCode });
             }
+            else if (detector is SmokeDetector)
+            {
+                SmokeDetector smoke_detector = (SmokeDetector)detector;
+                _detectorDictionnary.TryAdd(smoke_detector.SmokeCode, smoke_detector);
+                RemoveWaitingDetector(new long[] { smoke_detector.SmokeCode });
+            }
+            //Always save after adding a new detector
+            SaveDetectors();
         }
 
         public static void RemoveAllWaitingDetectors()
