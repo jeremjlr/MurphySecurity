@@ -184,6 +184,12 @@ namespace MurphySecurity.Detectors
                         TryAddDetector(key_detector);
                         i = i + 6;
                     }
+                    else if (readInfo[i] == "SmokeDetector")
+                    {
+                        SmokeDetector smoke_detector = new SmokeDetector(long.Parse(readInfo[i + 1]), readInfo[i + 2]);
+                        TryAddDetector(smoke_detector);
+                        i = i + 3;
+                    }
                 }
             }
             catch (Exception exception)
@@ -231,7 +237,10 @@ namespace MurphySecurity.Detectors
 
         public static void TryRemoveDetector(Detector detector)
         {
-            if (detector is DoorWindowDetector)
+            long[] codes = detector.GetCodes();
+            foreach (int code in codes)
+                _detectorDictionnary.TryRemove(code, out detector);
+            /*if (detector is DoorWindowDetector)
             {
                 DoorWindowDetector door_window_detector = (DoorWindowDetector)detector;
                 _detectorDictionnary.TryRemove(door_window_detector.CloseCode, out detector);
@@ -250,6 +259,10 @@ namespace MurphySecurity.Detectors
                 _detectorDictionnary.TryRemove(key_detector.HomeCode, out detector);
                 _detectorDictionnary.TryRemove(key_detector.SOSCode, out detector);
             }
+            else if (detector is SmokeDetector)
+            {
+                SmokeDetector
+            }*/
             //Always save after removing a detector
             SaveDetectors();
         }
@@ -279,6 +292,12 @@ namespace MurphySecurity.Detectors
                         string toAdd = "KeyDetector" + "\n" + key_detector.OpenCode + "\n" + key_detector.CloseCode + "\n" + key_detector.HomeCode + "\n" + key_detector.SOSCode + "\n" + key_detector.Name + "\n";
                         toSave = toSave + toAdd;
                     }
+                    else if (detector is SmokeDetector)
+                    {
+                        SmokeDetector smoke_detector = (SmokeDetector)detector;
+                        string toAdd = "SmokeDetector" + "\n" + smoke_detector.SmokeCode + "\n" + smoke_detector.Name + "\n";
+                        toSave = toSave + toAdd;
+                    }
                 }
 
                 try
@@ -298,7 +317,11 @@ namespace MurphySecurity.Detectors
         /// <param name="detector"></param>
         public static void TryAddDetector(Detector detector)
         {
-            if (detector is DoorWindowDetector)
+            long[] codes = detector.GetCodes();
+            foreach (int code in codes)
+                _detectorDictionnary.TryAdd(code, detector);
+            RemoveWaitingDetector(codes);
+            /*if (detector is DoorWindowDetector)
             {
                 DoorWindowDetector door_window_detector = (DoorWindowDetector)detector;
                 _detectorDictionnary.TryAdd(door_window_detector.OpenCode, door_window_detector);
@@ -326,7 +349,7 @@ namespace MurphySecurity.Detectors
                 SmokeDetector smoke_detector = (SmokeDetector)detector;
                 _detectorDictionnary.TryAdd(smoke_detector.SmokeCode, smoke_detector);
                 RemoveWaitingDetector(new long[] { smoke_detector.SmokeCode });
-            }
+            }*/
             //Always save after adding a new detector
             SaveDetectors();
         }
