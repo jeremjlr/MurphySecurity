@@ -195,6 +195,9 @@ Add at the end:<br/>
 awb_auto_is_greyworld=1
 ```
 
+<p><b>How come my 433Mhz receivers and transmitters do not seem to be working well ? They have very short range.</b><br/>
+Please make sure you did not forget to weld the antenna.</p>
+
 ## License
 <p>MurphySecurity is available under AGPL-3.0 License.</p>
 <p>Libraries used by MurphySecurity :</p>
