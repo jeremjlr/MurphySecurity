@@ -1,5 +1,5 @@
 sudo apt-get update
-sudo apt-get upgrade
+sudo apt-get -y upgrade
 sudo python3 -m pip install --upgrade pip
 python3 -m pip install --upgrade 
 sudo python3 -m pip install rpi-rf
