@@ -187,18 +187,18 @@ namespace MurphySecurity.Alerts
                     base.LaunchAlert();
             }
         }
-        public static IntrusionAlertClass IntrusionAlert = new IntrusionAlertClass("AN INTRUSION WAS DETECTED !\nPlease go check it.");
+        public static readonly IntrusionAlertClass IntrusionAlert = new IntrusionAlertClass("AN INTRUSION WAS DETECTED !\nPlease go check it.");
         public class FireAlertClass : Alert
         {
             public FireAlertClass(string emailMessage) : base(emailMessage) { }
         }
-        public static FireAlertClass FireAlert = new FireAlertClass("A FIRE WAS DETECTED !\nPlease go check it.");
+        public static readonly FireAlertClass FireAlert = new FireAlertClass("A FIRE WAS DETECTED !\nPlease go check it.");
 
         public class SOSClass : Alert
         {
             public SOSClass(string emailMessage) : base(emailMessage) { }
         }
-        public static SOSClass SOSAlert = new SOSClass("SOMEONE JUST LAUNCHED A SOS!\nPlease go check it.");
+        public static readonly SOSClass SOSAlert = new SOSClass("SOMEONE JUST LAUNCHED A SOS!\nPlease go check it.");
         #endregion
     }
 }

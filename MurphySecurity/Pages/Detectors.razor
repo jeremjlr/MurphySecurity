@@ -100,7 +100,7 @@ else
                         if (door_window_detector.IsOpen)
                         {
                             <li>
-                                @door_window_detector.Name : <font color="red">Opened</font> @minutes minutes ago.<button class="oi oi-list-rich" aria-hidden="true" @onclick="() => { StartEditing(detector); }"></button>
+                                @door_window_detector.Name : <font color="red">Opened</font> @minutes ago.<button class="oi oi-list-rich" aria-hidden="true" @onclick="() => { StartEditing(detector); }"></button>
                             </li>
                         }
                         else
@@ -112,16 +112,20 @@ else
                     }
                     else if (detector is MovementDetector)
                     {
-                        MovementDetector movement_detector = (MovementDetector)detector;
                         <li>
-                            @movement_detector.Name : <font color="red">Movement detected</font> @minutes minutes ago.<button class="oi oi-list-rich" aria-hidden="true" @onclick="() => { StartEditing(detector); }"></button>
+                            @detector.Name : <font color="red">Movement detected</font> @minutes minutes ago.<button class="oi oi-list-rich" aria-hidden="true" @onclick="() => { StartEditing(detector); }"></button>
                         </li>
                     }
                     else if (detector is KeyDetector)
                     {
-                        KeyDetector key_detector = (KeyDetector)detector;
                         <li>
-                            @key_detector.Name : Last command received @minutes minutes ago.<button class="oi oi-list-rich" aria-hidden="true" @onclick="() => { StartEditing(detector); }"></button>
+                            @detector.Name : Last command received @minutes minutes ago.<button class="oi oi-list-rich" aria-hidden="true" @onclick="() => { StartEditing(detector); }"></button>
+                        </li>
+                    }
+                    else if (detector is SmokeDetector)
+                    {
+                        <li>
+                            @detector.Name : <font color="red">Smoke detected</font> @minutes minutes ago.<button class="oi oi-list-rich" aria-hidden="true" @onclick="() => { StartEditing(detector); }"></button>
                         </li>
                     }
                 }

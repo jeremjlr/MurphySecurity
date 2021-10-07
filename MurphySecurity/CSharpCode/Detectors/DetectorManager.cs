@@ -240,29 +240,6 @@ namespace MurphySecurity.Detectors
             long[] codes = detector.GetCodes();
             foreach (int code in codes)
                 _detectorDictionnary.TryRemove(code, out detector);
-            /*if (detector is DoorWindowDetector)
-            {
-                DoorWindowDetector door_window_detector = (DoorWindowDetector)detector;
-                _detectorDictionnary.TryRemove(door_window_detector.CloseCode, out detector);
-                _detectorDictionnary.TryRemove(door_window_detector.OpenCode, out detector);
-            }
-            else if (detector is MovementDetector)
-            {
-                MovementDetector movement_detector = (MovementDetector)detector;
-                _detectorDictionnary.TryRemove(movement_detector.MovementCode, out detector);
-            }
-            else if (detector is KeyDetector)
-            {
-                KeyDetector key_detector = (KeyDetector)detector;
-                _detectorDictionnary.TryRemove(key_detector.OpenCode, out detector);
-                _detectorDictionnary.TryRemove(key_detector.CloseCode, out detector);
-                _detectorDictionnary.TryRemove(key_detector.HomeCode, out detector);
-                _detectorDictionnary.TryRemove(key_detector.SOSCode, out detector);
-            }
-            else if (detector is SmokeDetector)
-            {
-                SmokeDetector
-            }*/
             //Always save after removing a detector
             SaveDetectors();
         }
@@ -321,35 +298,6 @@ namespace MurphySecurity.Detectors
             foreach (int code in codes)
                 _detectorDictionnary.TryAdd(code, detector);
             RemoveWaitingDetector(codes);
-            /*if (detector is DoorWindowDetector)
-            {
-                DoorWindowDetector door_window_detector = (DoorWindowDetector)detector;
-                _detectorDictionnary.TryAdd(door_window_detector.OpenCode, door_window_detector);
-                _detectorDictionnary.TryAdd(door_window_detector.CloseCode, door_window_detector);
-                //Removes the detector from the waiting detectors
-                RemoveWaitingDetector(new long[] { door_window_detector.OpenCode, door_window_detector.CloseCode });
-            }
-            else if (detector is MovementDetector)
-            {
-                MovementDetector movement_detector = (MovementDetector)detector;
-                _detectorDictionnary.TryAdd(movement_detector.MovementCode, movement_detector);
-                RemoveWaitingDetector(new long[] { movement_detector.MovementCode });
-            }
-            else if (detector is KeyDetector)
-            {
-                KeyDetector key_detector = (KeyDetector)detector;
-                _detectorDictionnary.TryAdd(key_detector.OpenCode, key_detector);
-                _detectorDictionnary.TryAdd(key_detector.CloseCode, key_detector);
-                _detectorDictionnary.TryAdd(key_detector.HomeCode, key_detector);
-                _detectorDictionnary.TryAdd(key_detector.SOSCode, key_detector);
-                RemoveWaitingDetector(new long[] { key_detector.OpenCode, key_detector.CloseCode, key_detector.HomeCode, key_detector.SOSCode });
-            }
-            else if (detector is SmokeDetector)
-            {
-                SmokeDetector smoke_detector = (SmokeDetector)detector;
-                _detectorDictionnary.TryAdd(smoke_detector.SmokeCode, smoke_detector);
-                RemoveWaitingDetector(new long[] { smoke_detector.SmokeCode });
-            }*/
             //Always save after adding a new detector
             SaveDetectors();
         }
