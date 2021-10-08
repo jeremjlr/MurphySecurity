@@ -100,7 +100,7 @@ else
                         if (door_window_detector.IsOpen)
                         {
                             <li>
-                                @door_window_detector.Name : <font color="red">Opened</font> @minutes ago.<button class="oi oi-list-rich" aria-hidden="true" @onclick="() => { StartEditing(detector); }"></button>
+                                @door_window_detector.Name : <font color="red">Opened</font> @minutes minutes ago.<button class="oi oi-list-rich" aria-hidden="true" @onclick="() => { StartEditing(detector); }"></button>
                             </li>
                         }
                         else
