@@ -168,7 +168,7 @@ There is also a button to generate new codes in case of conflict.
   <li>The things I'm currently working on :
     <ul>
       <li>Make the system fully compatible with all ONVIF IP cameras.</li>
-      <li>Change the way camera stream is sent to the core to increase quality and lower bandwidth.</li>
+      <li>Change the way camera stream is sent to the core to increase quality and stability.</li>
     </ul>
   </li>
   <li>A non-exhaustive list of interesting features that could be added :
