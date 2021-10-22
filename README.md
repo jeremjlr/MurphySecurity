@@ -127,6 +127,7 @@ Here is the algorithm for those interested :
 def detect(frame):
     global baseline_image
     global base_time
+    global detection_count
 
     #Lowers the frame size then turns it gray and blurs it a little bit
     #Makes the detection faster and easier
@@ -137,6 +138,7 @@ def detect(frame):
     if baseline_image is None or time.time()-base_time >10:
         baseline_image=gray_frame
         base_time = time.time()
+        detection_count = 0
     #Calculates the absolute delta difference between each pixel of the baseline frame and the current frame
     delta=cv.absdiff(baseline_image,gray_frame)
     #Passes the result through a threshold filter which removes the values under detection_sensibility
@@ -145,7 +147,12 @@ def detect(frame):
     mean = threshold.mean()
     #Triggers a detection
     if mean>detection_tolerance:
-        return True
+        detection_count += 1
+        baseline_image = gray_frame
+        if detection_count > frame_tolerance :
+            return True
+        else :
+            return False
     else:
         return False
 ```
