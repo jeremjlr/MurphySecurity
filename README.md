@@ -47,7 +47,7 @@ As of now, MurphySecurity has the following non-exhaustive functionnal features 
   <li>Automatically sends an email with the new ip to access the web app if it has changed.</li>
   <li>Can send alerts to multiple emails.</li>
   <li>Camera recordings can be viewed/deleted/downloaded from the web app.</li>
-  <li>Works with raspberry pi night vision cameras.</li>
+  <li>Works with raspberry pi night vision cameras and any usb camera.</li>
   <li>The camera detection algorithm is customizable from the web app.</li>
   <li>Compatible with most 433Mhz detectors, alarms or keys. It will both receive signals from detectors/keys and send signals to trigger alarms.</li> 
   <li>There are 3 types of alerts, intrusion alerts from 433Mhz detectors and camera detection, fire alerts from 433Mhz smoke detectors, SOS alerts from keys' SOS buttons.</li>
@@ -101,6 +101,11 @@ bash installcore.sh
 ```
 
 ## How to Use / Videos
+Using emails to send alerts was prefered due to its flexibility, it is easy to set up notifications when an email is received on any device. Especially on a smartwatch which i'm using to receive instant notifications.
+
+Some of the devices this project was tested with :
+
+
 Some videos showing a few random things using the webapp on a phone : 
 <ul>
             <li>Camera tour : https://www.youtube.com/watch?v=_s6VhPigDJ0</li>
