@@ -104,6 +104,11 @@ bash installcore.sh
 Using emails to send alerts was prefered due to its flexibility, it is easy to set up notifications when an email is received on any device. Especially on a smartwatch which i'm using to receive instant notifications.
 
 Some of the devices this project was tested with :
+<p>
+            <img width=200 height=266 src="https://github.com/jeremjlr/MurphySecurity/blob/work-branch/MurphySecurity/Media/All%20devices.jpg"/>
+            <img width=200 height=266 src="https://github.com/jeremjlr/MurphySecurity/blob/work-branch/MurphySecurity/Media/Transmitter-Receiver.jpg"/>
+            <img width=153 height=202 src="https://github.com/jeremjlr/MurphySecurity/blob/work-branch/MurphySecurity/Media/SmartWatch.jpg"/>
+</p>
 
 
 Some videos showing a few random things using the webapp on a phone : 
