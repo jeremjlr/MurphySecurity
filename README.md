@@ -2,17 +2,6 @@
 MurphySecurity is a simple home security system designed to be used with Raspberry pis.<br/>
 You can monitor your home, setup a camera with movement detection, setup multiple detection devices (door sensors, movement sensors, smoke detectors, etc), receive emails when any alert is triggered (intrusion, fire or SOS alerts), access and control everything from anywhere only using a web browser thanks to a .NET Blazor web application, or even setup a remote key to easily turn on or off the system as well as launch SOS alerts... all of that with (at least) a single Raspberry Pi :)
 
-<video controls>
-            <source src="MurphySecurity/Media/Alerts.mp4" type="video/mp4">
-            <source src="MurphySecurity/Media/Alerts.mp4" type="video/x-ms-wmv">
-            <source src="MurphySecurity/Media/Alerts.mp4" type="video/webm">
-            <source src="MurphySecurity/Media/Alerts.mp4" type="video/ogg">
-            <source src="MurphySecurity/Media/Alerts.mp4" type="video/m4v">
-            <source src="MurphySecurity/Media/Alerts.mp4" type="video/mpeg">
-            <source src="MurphySecurity/Media/Alerts.mp4" type="video/quicktime">
-            <source src="MurphySecurity/Media/Alerts.mp4" type="video/3gpp">
-        </video>
-
 ## Table of Contents
 <ol>
   <li><a href="#about-the-project">About The Project</a></li>
@@ -41,13 +30,13 @@ As of now, MurphySecurity has the following non-exhaustive functionnal features 
   <li>The system doesn't stop working/recording in case of internet failure.</li>
   <li>The system reconnects automatically once internet is back up.</li>
   <li>Easy plug&play once installation is done on the raspberry pis.</li>
-  <li>Camera connection to the core if fully automated, it only needs to be on the same network.</li>
+  <li>Camera connection to the core is fully automated, it only needs to be on the same network.</li>
   <li>Very easy to setup thanks to installation scripts.</li>
   <li>The system has distant login/logout with automated disconnection after 6 hours.</li>
   <li>Automatically sends an email with the new ip to access the web app if it has changed.</li>
   <li>Can send alerts to multiple emails.</li>
   <li>Camera recordings can be viewed/deleted/downloaded from the web app.</li>
-  <li>Works with raspberry pi night vision cameras.</li>
+  <li>Works with raspberry pi night vision cameras and any usb camera.</li>
   <li>The camera detection algorithm is customizable from the web app.</li>
   <li>Compatible with most 433Mhz detectors, alarms or keys. It will both receive signals from detectors/keys and send signals to trigger alarms.</li> 
   <li>There are 3 types of alerts, intrusion alerts from 433Mhz detectors and camera detection, fire alerts from 433Mhz smoke detectors, SOS alerts from keys' SOS buttons.</li>
@@ -60,7 +49,7 @@ As of now, MurphySecurity has the following non-exhaustive functionnal features 
 Both core and camera installations are assumed to be done on a fresh raspberry pi os install.<br/>
 Both should also have the same private WiFi network saved for automated connection.<br/>
 MurphySecurity was developped under python 3.7.3, it hasn't been tested with any other python version.<br/>
-Do not forget to also forward ports 80 and 443 to the core raspberry pi, to which you should assign a static IP.
+Do not forget to also forward ports 80 and 443 to the core raspberry pi, to which you should also assign a static IP.
 
 ### [Core only] 433Mhz Receiver/Transmitter GPIO Connections
 If you're installing a core don't forget to set up the GPIO 433Mhz receiver and transmitter using the following instructions :
@@ -101,6 +90,16 @@ bash installcore.sh
 ```
 
 ## How to Use / Videos
+Using emails to send alerts was prefered due to its flexibility, it is easy to set up notifications when an email is received on any device. Especially on a smartwatch which i'm using to receive instant notifications.
+
+Some of the devices this project was tested with :
+<p>
+            <img width=200 height=266 src="https://github.com/jeremjlr/MurphySecurity/blob/work-branch/MurphySecurity/Media/All%20devices.jpg"/>
+            <img width=200 height=266 src="https://github.com/jeremjlr/MurphySecurity/blob/work-branch/MurphySecurity/Media/Transmitter-Receiver.jpg"/>
+            <img width=153 height=202 src="https://github.com/jeremjlr/MurphySecurity/blob/work-branch/MurphySecurity/Media/SmartWatch.jpg"/>
+</p>
+
+
 Some videos showing a few random things using the webapp on a phone : 
 <ul>
             <li>Camera tour : https://www.youtube.com/watch?v=_s6VhPigDJ0</li>
@@ -168,7 +167,7 @@ There is also a button to generate new codes in case of conflict.
   <li>The things I'm currently working on :
     <ul>
       <li>Make the system fully compatible with all ONVIF IP cameras.</li>
-      <li>Change the way camera stream is sent to the core to increase quality and lower bandwidth.</li>
+      <li>Change the way camera stream is sent to the core to increase quality and stability.</li>
     </ul>
   </li>
   <li>A non-exhaustive list of interesting features that could be added :
@@ -197,6 +196,9 @@ Add at the end:<br/>
 ```
 awb_auto_is_greyworld=1
 ```
+
+<p><b>How come my 433Mhz receivers and transmitters do not seem to be working well ? They have very short range.</b><br/>
+Please make sure you did not forget to weld the antenna.</p>
 
 ## License
 MurphySecurity is available under AGPL-3.0 License.<br/>

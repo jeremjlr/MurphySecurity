@@ -66,6 +66,7 @@ else if (_validating)
             {
                 <option value="0">Door/Window Detector</option>
                 <option value="1">Movement Detector</option>
+                <option value="3">Smoke Detector</option>
             }
             else if (_detectorToValidate.Length == 2)
             {
@@ -111,16 +112,20 @@ else
                     }
                     else if (detector is MovementDetector)
                     {
-                        MovementDetector movement_detector = (MovementDetector)detector;
                         <li>
-                            @movement_detector.Name : <font color="red">Movement detected</font> @minutes minutes ago.<button class="oi oi-list-rich" aria-hidden="true" @onclick="() => { StartEditing(detector); }"></button>
+                            @detector.Name : <font color="red">Movement detected</font> @minutes minutes ago.<button class="oi oi-list-rich" aria-hidden="true" @onclick="() => { StartEditing(detector); }"></button>
                         </li>
                     }
                     else if (detector is KeyDetector)
                     {
-                        KeyDetector key_detector = (KeyDetector)detector;
                         <li>
-                            @key_detector.Name : Last command received @minutes minutes ago.<button class="oi oi-list-rich" aria-hidden="true" @onclick="() => { StartEditing(detector); }"></button>
+                            @detector.Name : Last command received @minutes minutes ago.<button class="oi oi-list-rich" aria-hidden="true" @onclick="() => { StartEditing(detector); }"></button>
+                        </li>
+                    }
+                    else if (detector is SmokeDetector)
+                    {
+                        <li>
+                            @detector.Name : <font color="red">Smoke detected</font> @minutes minutes ago.<button class="oi oi-list-rich" aria-hidden="true" @onclick="() => { StartEditing(detector); }"></button>
                         </li>
                     }
                 }
@@ -187,7 +192,6 @@ else
     private void DeleteDetector()
     {
         DetectorManager.TryRemoveDetector(_detectorToEdit);
-        DetectorManager.SaveDetectors();
         _editing = false;
     }
 
@@ -205,6 +209,7 @@ else
 
     private void ValidateDetector(int detectorType)
     {
+        //If supported length we sort and add the detector otherwise we ignore it
         Array.Sort(_detectorToValidate);
         if (detectorType == 0)
         {
@@ -224,7 +229,11 @@ else
                 //Close code is the smaller code for keys, instead of Open code like DoorWindowDetectors
                 DetectorManager.TryAddDetector(new KeyDetector(_detectorToValidate[1], _detectorToValidate[0], _detectorToValidate[2], _detectorToValidate[3], "KeyDetector"));
         }
-        DetectorManager.SaveDetectors();
+        else if (detectorType == 3)
+        {
+            if (_detectorToValidate.Length == 1)
+                DetectorManager.TryAddDetector(new SmokeDetector(_detectorToValidate[0], "SmokeDetector"));
+        }
     }
 
     private void UpdateDetectors()
