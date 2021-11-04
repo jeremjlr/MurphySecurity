@@ -30,7 +30,7 @@ As of now, MurphySecurity has the following non-exhaustive functionnal features 
   <li>The system doesn't stop working/recording in case of internet failure.</li>
   <li>The system reconnects automatically once internet is back up.</li>
   <li>Easy plug&play once installation is done on the raspberry pis.</li>
-  <li>Camera connection to the core if fully automated, it only needs to be on the same network.</li>
+  <li>Camera connection to the core is fully automated, it only needs to be on the same network.</li>
   <li>Very easy to setup thanks to installation scripts.</li>
   <li>The system has distant login/logout with automated disconnection after 6 hours.</li>
   <li>Automatically sends an email with the new ip to access the web app if it has changed.</li>
@@ -49,7 +49,7 @@ As of now, MurphySecurity has the following non-exhaustive functionnal features 
 Both core and camera installations are assumed to be done on a fresh raspberry pi os install.<br/>
 Both should also have the same private WiFi network saved for automated connection.<br/>
 MurphySecurity was developped under python 3.7.3, it hasn't been tested with any other python version.<br/>
-Do not forget to also forward ports 80 and 443 to the core raspberry pi, to which you should assign a static IP.
+Do not forget to also forward ports 80 and 443 to the core raspberry pi, to which you should also assign a static IP.
 
 ### [Core only] 433Mhz Receiver/Transmitter GPIO Connections
 If you're installing a core don't forget to set up the GPIO 433Mhz receiver and transmitter using the following instructions :
