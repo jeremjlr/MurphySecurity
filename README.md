@@ -2,17 +2,6 @@
 MurphySecurity is a simple home security system designed to be used with Raspberry pis.<br/>
 You can monitor your home, setup a camera with movement detection, setup multiple detection devices (door sensors, movement sensors, smoke detectors, etc), receive emails when any alert is triggered (intrusion, fire or SOS alerts), access and control everything from anywhere only using a web browser thanks to a .NET Blazor web application, or even setup a remote key to easily turn on or off the system as well as launch SOS alerts... all of that with (at least) a single Raspberry Pi :)
 
-<video controls>
-            <source src="MurphySecurity/Media/Alerts.mp4" type="video/mp4">
-            <source src="MurphySecurity/Media/Alerts.mp4" type="video/x-ms-wmv">
-            <source src="MurphySecurity/Media/Alerts.mp4" type="video/webm">
-            <source src="MurphySecurity/Media/Alerts.mp4" type="video/ogg">
-            <source src="MurphySecurity/Media/Alerts.mp4" type="video/m4v">
-            <source src="MurphySecurity/Media/Alerts.mp4" type="video/mpeg">
-            <source src="MurphySecurity/Media/Alerts.mp4" type="video/quicktime">
-            <source src="MurphySecurity/Media/Alerts.mp4" type="video/3gpp">
-        </video>
-
 ## Table of Contents
 <ol>
   <li><a href="#about-the-project">About The Project</a></li>
