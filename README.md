@@ -50,6 +50,7 @@ Both core and camera installations are assumed to be done on a fresh raspberry p
 Both should also have the same private WiFi network saved for automated connection.<br/>
 MurphySecurity was developped under python 3.7.3, it hasn't been tested with any other python version.<br/>
 Do not forget to also forward ports 80 and 443 to the core raspberry pi, to which you should also assign a static IP.
+The core will automatically send an email with the newest IP when it is modified, however I recommend using a dynamic host domain name.
 
 ### [Core only] 433Mhz Receiver/Transmitter GPIO Connections
 If you're installing a core don't forget to set up the GPIO 433Mhz receiver and transmitter using the following instructions :
