@@ -183,6 +183,10 @@ There is also a button to generate new codes in case of conflict.
   </li>
 </ul>
 
+## Known Bugs
+
+- Security Breach : For testing purposes, some files are stored in wwwroot and can be accessed without typing the password. They will be relocated.
+
 ## FAQ
 <b>My camera looks too pinkish, what can I do ?</b><br/>
 This has nothing to do with this project but here is a simple way to somewhat fix it, open:
