@@ -1,4 +1,4 @@
-# MurphySecurity (v0.1.2.0)
+# MurphySecurity (v0.1.2.0) - Deprecated | Newer versions are currently private
 MurphySecurity is a simple home security system designed to be used with Raspberry pis.<br/>
 You can monitor your home, setup a camera with movement detection, setup multiple detection devices (door sensors, movement sensors, smoke detectors, etc), receive emails when any alert is triggered (intrusion, fire or SOS alerts), access and control everything from anywhere only using a web browser thanks to a .NET Blazor web application, or even setup a remote key to easily turn on or off the system as well as launch SOS alerts... all of that with (at least) a single Raspberry Pi :)
 
